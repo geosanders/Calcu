@@ -1,5 +1,7 @@
 ROADMAP
 
+* build python server component
+
 * verify the rounding is correct
 * add color rotation to final total (some stuff in there but needs more love)
 * add commas so the numbers read nicer
