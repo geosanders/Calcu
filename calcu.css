@@ -2,6 +2,7 @@
 body {
 	font-family: Arial, Verdana;
 	font-size: 20px;
+	background: #000;
 }
 
 #main {
@@ -10,10 +11,192 @@ body {
 }
 
 #main td {
-	border: 1px solid #aaa;
 	vertical-align: top;
 }
 
+#main .key {
+	background-position: top;
+}
 #main .key.down {
-	background: #aaa;
+	background-position: bottom;
+}
+
+#main .calc_01 {
+	background: url('images/calc_part_01.jpg');
+	width: 1280;
+	height: 62;
+}
+
+#main .calc_02 {
+	background: url('images/calc_part_02.jpg');
+	width: 89;
+	height: 657;
+}
+
+#main .calc_03 {
+	background: url('images/calc_part_03.jpg');
+	width: 479;
+	height: 7;
+}
+
+#main .calc_04 {
+	background: url('images/calc_part_04.jpg');
+	width: 36;
+	height: 593;
+}
+
+#main .calc_05 {
+	background: url('images/calc_part_05.jpg');
+	width: 563;
+	height: 593;
+}
+
+#main .calc_06 {
+	background: url('images/calc_part_06.jpg');
+	width: 24;
+	height: 593;
+}
+
+#main .calc_07 {
+	background: url('images/calc_part_07.jpg');
+	width: 89;
+	height: 657;
+}
+
+#main .calc_08 {
+	background: url('images/calc_part_08.jpg');
+	width: 5;
+	height: 586;
+}
+
+#main .calc_09 {
+	background: url('images/calc_part_09.jpg');
+	width: 87;
+	height: 95;
+}
+
+#main .calc_10 {
+	background: url('images/calc_part_10.jpg');
+	width: 387;
+	height: 95;
+}
+
+#main .calc_11 {
+	background: url('images/calc_part_11.jpg');
+	width: 474;
+	height: 22;
+}
+
+#main .calc_12 {
+	background: url('images/calc_part_12.jpg');
+	width: 235;
+	height: 93;
+}
+
+#main .calc_13 {
+	background: url('images/calc_part_13.jpg');
+	width: 121;
+	height: 93;
+}
+
+#main .calc_14 {
+	background: url('images/calc_part_14.jpg');
+	width: 118;
+	height: 93;
+}
+
+#main .calc_15 {
+	background: url('images/calc_part_15.jpg');
+	width: 116;
+	height: 95;
+}
+
+#main .calc_16 {
+	background: url('images/calc_part_16.jpg');
+	width: 119;
+	height: 95;
+}
+
+#main .calc_17 {
+	background: url('images/calc_part_17.jpg');
+	width: 121;
+	height: 95;
+}
+
+#main .calc_18 {
+	background: url('images/calc_part_18.jpg');
+	width: 118;
+	height: 95;
+}
+
+#main .calc_19 {
+	background: url('images/calc_part_19.jpg');
+	width: 116;
+	height: 90;
+}
+
+#main .calc_20 {
+	background: url('images/calc_part_20.jpg');
+	width: 119;
+	height: 90;
+}
+
+#main .calc_21 {
+	background: url('images/calc_part_21.jpg');
+	width: 121;
+	height: 90;
+}
+
+#main .calc_22 {
+	background: url('images/calc_part_22.jpg');
+	width: 118;
+	height: 90;
+}
+
+#main .calc_23 {
+	background: url('images/calc_part_23.jpg');
+	width: 116;
+	height: 93;
+}
+
+#main .calc_24 {
+	background: url('images/calc_part_24.jpg');
+	width: 119;
+	height: 93;
+}
+
+#main .calc_25 {
+	background: url('images/calc_part_25.jpg');
+	width: 121;
+	height: 93;
+}
+
+#main .calc_26 {
+	background: url('images/calc_part_26.jpg');
+	width: 118;
+	height: 184;
+}
+
+#main .calc_27 {
+	background: url('images/calc_part_27.jpg');
+	width: 235;
+	height: 91;
+}
+
+#main .calc_28 {
+	background: url('images/calc_part_28.jpg');
+	width: 121;
+	height: 91;
+}
+
+#main .calc_29 {
+	background: url('images/calc_part_29.jpg');
+	width: 474;
+	height: 7;
+}
+
+#main .calc_30 {
+	background: url('images/calc_part_30.jpg');
+	width: 1102;
+	height: 64;
 }
