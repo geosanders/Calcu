@@ -1,0 +1,19 @@
+
+body {
+	font-family: Arial, Verdana;
+	font-size: 20px;
+}
+
+#main {
+	font-size: 36px;
+	border-collapse:collapse;
+}
+
+#main td {
+	border: 1px solid #aaa;
+	vertical-align: top;
+}
+
+#main .key.down {
+	background: #aaa;
+}
