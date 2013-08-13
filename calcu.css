@@ -29,9 +29,9 @@ body {
 #main #readout .inner {
 	text-align: right;
 	color: #fff;
-	font-size: 60px;
-	padding-top: 15px;
-	padding-right: 24px;
+	font-size: 85px;
+	padding-top: 26px;
+	padding-right: 45;
 }
 
 #main .calc_01 {
@@ -84,13 +84,13 @@ body {
 
 #main .calc_09 {
 	background: url('images/calcu_09.jpg');
-	width: 131px;
+	/* width: 131px; */
 	height: 144px;
 }
 
 #main .calc_10 {
 	background: url('images/calcu_10.jpg');
-	width: 580px;
+	/* width: 580px; */
 	height: 144px;
 }
 
