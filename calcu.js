@@ -80,4 +80,16 @@ $(function() {
 
 	});
 
+	$('.key').mousedown(function(e) {
+		if (e.target && e.target.id && (e.target.id+'').match(/^key_/)) {
+			keyStateDown(e.target.id);
+		}
+	});
+
+	$('.key').mouseup(function(e) {
+		if (e.target && e.target.id && (e.target.id+'').match(/^key_/)) {
+			keyStateUp(e.target.id);
+		}
+	});
+
 });
