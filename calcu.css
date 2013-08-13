@@ -23,6 +23,13 @@ body {
 	background-position: top;
 }
 
+#main #readout_op .inner {
+	padding-top: 15px;
+	padding-left: 21px;
+	color: #fff;
+	font-size: 60px;
+}
+
 #main .calc_01 {
 	background: url('images/calcu_01.jpg');
 	width: 1920px;
