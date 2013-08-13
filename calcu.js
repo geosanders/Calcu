@@ -4,7 +4,6 @@ var CALC_STATE = {
 	operator: null,
 	operands: [0],
 	readout: '0',
-
 };
 
 /* map key combinations to buttons and data */
@@ -49,10 +48,21 @@ function keyStateUp(aKeyName) {
 function processButtonPress(aButtonData) {
 
 	if (aButtonData.action == 'append') {
-
+		var r = CALC_STATE.readout;
+		if (r == '0') {
+			r = aButtonData.item;
+		}
+		else {
+			r += aButtonData.item;
+		}
+		// discard this change if it's now too long
+		if (r.length < 10) {
+			CALC_STATE.readout = r;
+		}
 	}
 	else if (aButtonData.action == 'clear') {
 		CALC_STATE.operator = null;
+		CALC_STATE.readout = '0';
 	}
 	else if (aButtonData.action == 'setop') {
 		CALC_STATE.operator = aButtonData.op;
@@ -70,6 +80,7 @@ function processButtonPress(aButtonData) {
 
 function updateDisplay() {
 
+	/////////////////////////////////////////////
 	// update operator in display
 	var mySymbol = '';
 	if (CALC_STATE.operator == '/') {
@@ -88,6 +99,12 @@ function updateDisplay() {
 	if (mySymbol == null) { mySymbol = ''; }
 
 	$('#readout_op').html('<div class="inner">'+mySymbol+'</div>');
+
+	////////////////////////////////////////////
+	// update the readout
+	var myReadoutHtml = CALC_STATE.readout;
+	$('#readout').html('<div class="inner">'+myReadoutHtml+'</div>');
+
 }
 
 

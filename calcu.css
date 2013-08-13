@@ -30,6 +30,14 @@ body {
 	font-size: 60px;
 }
 
+#main #readout .inner {
+	text-align: right;
+	color: #fff;
+	font-size: 60px;
+	padding-top: 15px;
+	padding-right: 24px;
+}
+
 #main .calc_01 {
 	background: url('images/calc_part_01.jpg');
 	width: 1280;
