@@ -15,10 +15,6 @@ body {
 #main td {
 	vertical-align: top;
 }
-
-#main .key {
-	background-position: bottom;
-}
 #main .key.down {
 	background-position: top;
 }
@@ -216,4 +212,8 @@ body {
 	background: url('images/calcu_30.jpg');
 	width: 1654px;
 	height: 96px;
+}
+
+#main .key {
+	background-position: bottom;
 }
