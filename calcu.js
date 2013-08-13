@@ -8,6 +8,7 @@ var CALC_STATE = {
 
 /* map key combinations to buttons and data */
 var KEY_DATA = {
+	key_backspace: { keys:[{code:8,shift:0}], action: 'backspace' },
 	key_clear: { keys:[{code:12,shift:1},{code:27,shift:0}], action: 'clear' },
 	key_divide: { keys:[{code:111,shift:0},{code:191,shift:0}], action: 'setop', op:'/' },
 	key_times: { keys:[{code:106,shift:0}], action: 'setop', op:'*' },
@@ -53,12 +54,34 @@ function processButtonPress(aButtonData) {
 			r = aButtonData.item;
 		}
 		else {
-			r += aButtonData.item;
+
+			// handle period separately
+			if (aButtonData.item == '.') {
+				// can't add two periods to a number
+				if (r.indexOf('.') < 0) {
+					r += aButtonData.item;
+				}
+			}
+
+			// otherwise just append
+			else {
+				r += aButtonData.item;
+			}
 		}
 		// discard this change if it's now too long
-		if (r.length < 10) {
+		if (r.length < 12) {
 			CALC_STATE.readout = r;
 		}
+	}
+	else if (aButtonData.action == 'backspace') {
+		var r = CALC_STATE.readout;
+		if (r.length > 1) {
+			r = r.substring(0, r.length-1);
+		}
+		else {
+			r = '0';
+		}
+		CALC_STATE.readout = r;
 	}
 	else if (aButtonData.action == 'clear') {
 		CALC_STATE.operator = null;
@@ -119,6 +142,7 @@ $(function() {
 				var myKeyData = KEY_DATA[i].keys[j];
 				if (myKeyData.code == e.keyCode && ((!!myKeyData.shift) == (!!e.shiftKey))) {
 					keyStateDown(i);
+					e.preventDefault();
 				}
 			}
 		}
@@ -147,6 +171,7 @@ $(function() {
 				var myKeyData = KEY_DATA[i].keys[j];
 				if (myKeyData.code == e.keyCode && ((!!myKeyData.shift) == (!!e.shiftKey))) {
 					keyStateUp(i);
+					e.preventDefault();
 				}
 			}
 		}
