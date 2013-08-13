@@ -1,13 +1,21 @@
 
+/* state of the calculator, set initially by a key_clear */
+var CALC_STATE = {
+	operator: null,
+	operands: [0],
+	readout: '0',
+
+};
+
 /* map key combinations to buttons and data */
 var KEY_DATA = {
 	key_clear: { keys:[{code:12,shift:1},{code:27,shift:0}], action: 'clear' },
-	key_period: { keys:[{code:110,shift:0},{code:190,shift:0}], action: 'append', item:'.' },
 	key_divide: { keys:[{code:111,shift:0},{code:191,shift:0}], action: 'setop', op:'/' },
 	key_times: { keys:[{code:106,shift:0}], action: 'setop', op:'*' },
 	key_minus: { keys:[{code:109,shift:0}], action: 'setop', op:'-' },
 	key_plus: { keys:[{code:107,shift:0}], action: 'setop', op:'+' },
 	key_equals: { keys:[{code:13,shift:0}], action: 'equals' },
+	key_period: { keys:[{code:110,shift:0},{code:190,shift:0}], action: 'append', item:'.' },
 	key_0: { keys:[{code:96,shift:0},{code:48,shift:0}], action: 'append', item: '0' },
 	key_1: { keys:[{code:97,shift:0},{code:49,shift:0}], action: 'append', item: '1' },
 	key_2: { keys:[{code:98,shift:0},{code:50,shift:0}], action: 'append', item: '2' },
@@ -18,7 +26,7 @@ var KEY_DATA = {
 	key_7: { keys:[{code:103,shift:0},{code:55,shift:0}], action: 'append', item: '7' },
 	key_8: { keys:[{code:104,shift:0},{code:56,shift:0}], action: 'append', item: '8' },
 	key_9: { keys:[{code:105,shift:0},{code:57,shift:0}], action: 'append', item: '9' },
-}
+};
 
 function keyStateDown(aKeyName) {
 	$('#'+aKeyName).addClass('down');
@@ -26,14 +34,62 @@ function keyStateDown(aKeyName) {
 
 function keyStateUp(aKeyName) {
 	$('#'+aKeyName).removeClass('down');
+	var myData = KEY_DATA[aKeyName];
+	if (myData) {
+		processButtonPress(myData);
+	}
+	else {
+		console.log("got keyStateUp for an unrecognized key name: " + aKeyName);
+	}
 }
 
 /**
  * Process a button press appropriately
  */
-function processButtonPress(aItem) {
+function processButtonPress(aButtonData) {
+
+	if (aButtonData.action == 'append') {
+
+	}
+	else if (aButtonData.action == 'clear') {
+		CALC_STATE.operator = null;
+	}
+	else if (aButtonData.action == 'setop') {
+		CALC_STATE.operator = aButtonData.op;
+	}
+	else if (aButtonData.action == 'equals') {
+	}
+	else {
+		console.log("unrecognized action: " + aButtonData.action);
+	}
+
+	updateDisplay();
 
 }
+
+
+function updateDisplay() {
+
+	// update operator in display
+	var mySymbol = '';
+	if (CALC_STATE.operator == '/') {
+		mySymbol = '&divide;';
+	}
+	else if (CALC_STATE.operator == '*') {
+		mySymbol = '&times;';
+	}
+	else if (CALC_STATE.operator == '-') {
+		mySymbol = '&minus;';
+	}
+	else {
+		mySymbol = CALC_STATE.operator;
+	}
+
+	if (mySymbol == null) { mySymbol = ''; }
+
+	$('#readout_op').html('<div class="inner">'+mySymbol+'</div>');
+}
+
 
 $(function() {
 
@@ -91,5 +147,11 @@ $(function() {
 			keyStateUp(e.target.id);
 		}
 	});
+
+	// clear everything out
+	processButtonPress(KEY_DATA.key_clear);
+
+	// do the initial display update
+	updateDisplay();
 
 });
