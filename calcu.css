@@ -50,12 +50,14 @@ body {
 #main #tape_detail .row.total {
 	color: #092f5b;
 }
-#main #tape_detail .row.last-total { 
+
+/*#main #tape_detail .row.last-total { */
+#main #tape_detail .row.total:last-child { 
 	color: #092f5b;
 	background: #e2f5fb;
 	font-weight: bold;
-
 }
+
 #main #tape_detail .blank {
 	height: 280px;
 }
