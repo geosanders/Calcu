@@ -31,19 +31,19 @@ body {
 	padding-left: 10px;
 	margin-left: 12px;
 }
-#main #tape_detail .row.add {
+#main #tape_detail .row.plus {
 	color: #007e00;
 }
-#main #tape_detail .row.subtract {
+#main #tape_detail .row.minus {
 	color: #fd0000;
 }
-#main #tape_detail .row.multiply {
+#main #tape_detail .row.times {
 	color: #007e00;
 }
 #main #tape_detail .row.divide {
 	color: #007e00;
 }
-#main #tape_detail .row.divider {
+#main #tape_detail .row.separator {
 	background: url('images/paper_roll_divider.png') no-repeat top right;
 	padding-top: 10px;
 }

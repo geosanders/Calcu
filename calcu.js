@@ -4,6 +4,7 @@ var CALC_STATE = {
 	operator: null, // the current operator: / * - +
 	operands: [0], // the operand stack
 	readout: '0', // the currently in the readout
+	justCleared: false,
 	state: 'input', // current state:
 					//   input (normal mode)
 					//   opsetwait (after you set an operator the first time and next key is new number)
@@ -54,6 +55,8 @@ function processButtonPress(aButtonData) {
 
 	if (aButtonData.action == 'append') {
 
+		CALC_STATE.justCleared = false;
+
 		if (CALC_STATE.state == 'opsetwait' || CALC_STATE.state == 'postcalc') {
 			CALC_STATE.readout = '0';
 			CALC_STATE.state = 'input';
@@ -85,6 +88,8 @@ function processButtonPress(aButtonData) {
 	}
 	else if (aButtonData.action == 'backspace') {
 
+		CALC_STATE.justCleared = false;
+
 		if (CALC_STATE.state == 'opsetwait') {
 			CALC_STATE.readout = '0';
 			CALC_STATE.state = 'input';
@@ -105,16 +110,35 @@ function processButtonPress(aButtonData) {
 		CALC_STATE.readout = '0';
 		CALC_STATE.state = 'input';
 
+		// if this is the second time it's being cleared, we clear the tape too
+		if (CALC_STATE.justCleared) {
+			clearTape();
+		}
+
+		CALC_STATE.justCleared = true;
+
 	}
 	else if (aButtonData.action == 'setop') {
-		// if not set then we do the opsetwait thing
-		if (!CALC_STATE.operator || CALC_STATE.operator == 'postcalc') {
+
+		CALC_STATE.justCleared = false;
+
+		// if op not set or in postcalc state then we do the opsetwait thing
+		if (!CALC_STATE.operator || CALC_STATE.state == 'postcalc') {
+
+			var myPriorState = CALC_STATE.state;
+
 			// push the value onto the operand stack
 			var v = roundNumber(CALC_STATE.readout);
 			CALC_STATE.operands[1] = v;
 			CALC_STATE.operands[0] = 0;
 			CALC_STATE.operator = aButtonData.op;
 			CALC_STATE.state = 'opsetwait';
+
+			// in postcalc we don't output the prior result
+			if (myPriorState != 'postcalc') {
+				addTapeRow(v, 'regular');
+			}
+
 		}
 		// otherwise we just update what the operator is
 		else {
@@ -123,8 +147,13 @@ function processButtonPress(aButtonData) {
 	}
 	else if (aButtonData.action == 'equals') {
 
+		CALC_STATE.justCleared = false;
+
 		// only proceed if not in opsetwait mode and if there is an operator
 		if (CALC_STATE.state == 'input' && CALC_STATE.operator) {
+
+			var myOperator = CALC_STATE.operator;
+			addTapeRow(CALC_STATE.operands[0], myOperator);
 
 			var v = null;
 
@@ -147,6 +176,10 @@ function processButtonPress(aButtonData) {
 			CALC_STATE.operator = null;
 			CALC_STATE.state = 'postcalc';
 			CALC_STATE.readout = numberToString(v);
+
+			addTapeRow(null, 'separator');
+
+			addTapeRow(v, 'total');
 
 		}
 
@@ -212,6 +245,67 @@ function numberToString(v) {
 
 }
 
+/**
+ * Add a row to the tape thing
+ */
+function addTapeRow(aValue, aType) {
+	
+	console.log("addTapeRow");
+
+	var myType = aType;
+	if (myType == '*') {
+		myType = 'times';
+	}
+	else if (myType == '/') {
+		myType = 'divide';
+	}
+	else if (myType == '+') {
+		myType = 'plus';
+	}
+	else if (myType == '-') {
+		myType = 'minus';
+	}
+
+	var myRow = $('<div class="row"></div>');
+
+	myRow.addClass(myType);
+
+	var v = aValue ? numberToString(aValue) : aValue;
+
+	if (myType == 'regular') {
+		v += '&nbsp;&nbsp;&nbsp;';
+	}
+	else if (myType == 'total') {
+		v += ' =';
+	}
+	else if (myType == 'plus') {
+		v += ' +';
+	}
+	else if (myType == 'minus') {
+		v += ' -';
+	}
+	else if (myType == 'times') {
+		v += ' &times;';
+	}
+	else if (myType == 'divide') {
+		v += ' &divide;';
+	}
+
+	myRow.html(v);
+
+	var myTapeDetailEl = document.getElementById('tape_detail');
+
+	$(myTapeDetailEl).append(myRow);
+
+	myTapeDetailEl.scrollTop = myTapeDetailEl.scrollHeight;
+}
+
+/**
+ * Clear the tape
+ */
+function clearTape() {
+	$('#tape_detail').html('');
+}
 
 $(function() {
 
@@ -261,5 +355,8 @@ $(function() {
 
 	// do the initial display update
 	updateDisplay();
+
+	// clear the tape out
+	clearTape();
 
 });
