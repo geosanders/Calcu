@@ -1,9 +1,13 @@
 
 /* state of the calculator, set initially by a key_clear */
 var CALC_STATE = {
-	operator: null,
-	operands: [0],
-	readout: '0',
+	operator: null, // the current operator: / * - +
+	operands: [0], // the operand stack
+	readout: '0', // the currently in the readout
+	state: 'input', // current state:
+					//   input (normal mode)
+					//   opsetwait (after you set an operator the first time and next key is new number)
+					//   postcalc (after a calculation has been made and it's showing the result number)
 };
 
 /* map key combinations to buttons and data */
@@ -49,6 +53,12 @@ function keyStateUp(aKeyName) {
 function processButtonPress(aButtonData) {
 
 	if (aButtonData.action == 'append') {
+
+		if (CALC_STATE.state == 'opsetwait' || CALC_STATE.state == 'postcalc') {
+			CALC_STATE.readout = '0';
+			CALC_STATE.state = 'input';
+		}
+
 		var r = CALC_STATE.readout;
 		if (r == '0') {
 			r = aButtonData.item;
@@ -74,6 +84,12 @@ function processButtonPress(aButtonData) {
 		}
 	}
 	else if (aButtonData.action == 'backspace') {
+
+		if (CALC_STATE.state == 'opsetwait') {
+			CALC_STATE.readout = '0';
+			CALC_STATE.state = 'input';
+		}
+
 		var r = CALC_STATE.readout;
 		if (r.length > 1) {
 			r = r.substring(0, r.length-1);
@@ -85,16 +101,62 @@ function processButtonPress(aButtonData) {
 	}
 	else if (aButtonData.action == 'clear') {
 		CALC_STATE.operator = null;
+		CALC_STATE.operands = [0];
 		CALC_STATE.readout = '0';
+		CALC_STATE.state = 'input';
+
 	}
 	else if (aButtonData.action == 'setop') {
-		CALC_STATE.operator = aButtonData.op;
+		// if not set then we do the opsetwait thing
+		if (!CALC_STATE.operator || CALC_STATE.operator == 'postcalc') {
+			// push the value onto the operand stack
+			var v = roundNumber(CALC_STATE.readout);
+			CALC_STATE.operands[1] = v;
+			CALC_STATE.operands[0] = 0;
+			CALC_STATE.operator = aButtonData.op;
+			CALC_STATE.state = 'opsetwait';
+		}
+		// otherwise we just update what the operator is
+		else {
+			CALC_STATE.operator = aButtonData.op;
+		}
 	}
 	else if (aButtonData.action == 'equals') {
+
+		// only proceed if not in opsetwait mode and if there is an operator
+		if (CALC_STATE.state == 'input' && CALC_STATE.operator) {
+
+			var v = null;
+
+			console.log("Doing calculation: " + CALC_STATE.operator);
+			if (CALC_STATE.operator == '+') {
+				v = roundNumber(CALC_STATE.operands[1] + CALC_STATE.operands[0]);
+			}
+			else if (CALC_STATE.operator == '-') {
+				v = roundNumber(CALC_STATE.operands[1] - CALC_STATE.operands[0]);
+			}
+			else if (CALC_STATE.operator == '/') {
+				v = roundNumber(CALC_STATE.operands[1] / CALC_STATE.operands[0]);
+			}
+			else if (CALC_STATE.operator == '*') {
+				v = roundNumber(CALC_STATE.operands[1] * CALC_STATE.operands[0]);
+			}
+			console.log("Result of calculation is " + v);
+
+			CALC_STATE.operands = [v];
+			CALC_STATE.operator = null;
+			CALC_STATE.state = 'postcalc';
+			CALC_STATE.readout = numberToString(v);
+
+		}
+
 	}
 	else {
 		console.log("unrecognized action: " + aButtonData.action);
 	}
+
+	// update the last operand
+	CALC_STATE.operands[0] = roundNumber(CALC_STATE.readout);
 
 	updateDisplay();
 
@@ -130,13 +192,33 @@ function updateDisplay() {
 
 }
 
+/** return number to two decimal places */
+function roundNumber(v) {
+	return parseFloat(parseFloat(v).toFixed(2));
+}
+
+/** return a user-friendly display of a number */
+function numberToString(v) {
+
+	var r = roundNumber(v)+'';
+	if (r.match(/\.00/)) {
+		r = r.substring(0, r.length-3);
+	}
+	else if (r.match(/\.[0-9]0/)) {
+		r = r.substring(0, r.length-1);
+	}
+
+	return r;
+
+}
+
 
 $(function() {
 
 	// $('#main').hide().fadeIn();
 
 	$(document).keydown(function(e) {
-		console.log("Key down: " + e.keyCode);
+		// console.log("Key down: " + e.keyCode);
 		for (var i in KEY_DATA) {
 			for (var j in KEY_DATA[i].keys) {
 				var myKeyData = KEY_DATA[i].keys[j];
@@ -146,22 +228,6 @@ $(function() {
 				}
 			}
 		}
-		// switch (e.keyCode) {
-		// 	case 12: case 27: { keyStateDown('key_clear'); } break;
-		// 	case 110: case 190: { keyStateDown('key_period'); } break;
-		// 	case 111: case 191: { keyStateDown('key_divide'); } break;
-		// 	case 106: { keyStateDown('key_times'); } break;
-		// 	case 96: case 48: { keyStateDown('key_0'); } break;
-		// 	case 97: case 49: { keyStateDown('key_1'); } break;
-		// 	case 98: case 50: { keyStateDown('key_2'); } break;
-		// 	case 99: case 51: { keyStateDown('key_3'); } break;
-		// 	case 100: case 52: { keyStateDown('key_4'); } break;
-		// 	case 101: case 53: { keyStateDown('key_5'); } break;
-		// 	case 102: case 54: { keyStateDown('key_6'); } break;
-		// 	case 103: case 55: { keyStateDown('key_7'); } break;
-		// 	case 104: case 56: { keyStateDown('key_8'); } break;
-		// 	case 105: case 57: { keyStateDown('key_9'); } break;
-		// }
 	});
 
 	$(document).keyup(function(e) {
