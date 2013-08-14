@@ -60,7 +60,11 @@ function keyStateUp(aKeyName) {
  */
 function processButtonPress(aButtonData) {
 
-	if (aButtonData.action == 'append') {
+	// deep copy the button data
+	var myButtonData = $.extend({}, aButtonData);
+	console.log(myButtonData);
+
+	if (myButtonData.action == 'append') {
 
 		CALC_STATE.justCleared = false;
 
@@ -71,21 +75,21 @@ function processButtonPress(aButtonData) {
 
 		var r = CALC_STATE.readout;
 		if (r == '0') {
-			r = aButtonData.item;
+			r = myButtonData.item;
 		}
 		else {
 
 			// handle period separately
-			if (aButtonData.item == '.') {
+			if (myButtonData.item == '.') {
 				// can't add two periods to a number
 				if (r.indexOf('.') < 0) {
-					r += aButtonData.item;
+					r += myButtonData.item;
 				}
 			}
 
 			// otherwise just append
 			else {
-				r += aButtonData.item;
+				r += myButtonData.item;
 			}
 		}
 		// discard this change if it's now too long
@@ -93,7 +97,7 @@ function processButtonPress(aButtonData) {
 			CALC_STATE.readout = r;
 		}
 	}
-	else if (aButtonData.action == 'backspace') {
+	else if (myButtonData.action == 'backspace') {
 
 		CALC_STATE.justCleared = false;
 
@@ -111,7 +115,7 @@ function processButtonPress(aButtonData) {
 		}
 		CALC_STATE.readout = r;
 	}
-	else if (aButtonData.action == 'clear') {
+	else if (myButtonData.action == 'clear') {
 		CALC_STATE.operator = null;
 		CALC_STATE.operands = [0];
 		CALC_STATE.readout = '0';
@@ -125,9 +129,12 @@ function processButtonPress(aButtonData) {
 		CALC_STATE.justCleared = true;
 
 	}
-	else if (aButtonData.action == 'setop') {
+	else if (myButtonData.action == 'setop') {
 
 		CALC_STATE.justCleared = false;
+
+
+		console.log(CALC_STATE.state);
 
 		// if op not set or in postcalc state then we do the opsetwait thing
 		if (!CALC_STATE.operator || CALC_STATE.state == 'postcalc') {
@@ -138,7 +145,7 @@ function processButtonPress(aButtonData) {
 			var v = roundNumber(CALC_STATE.readout);
 			CALC_STATE.operands[1] = v;
 			CALC_STATE.operands[0] = 0;
-			CALC_STATE.operator = aButtonData.op;
+			CALC_STATE.operator = myButtonData.op;
 			CALC_STATE.state = 'opsetwait';
 
 			// in postcalc we don't output the prior result
@@ -147,58 +154,85 @@ function processButtonPress(aButtonData) {
 			}
 
 		}
-		// otherwise we just update what the operator is
+
+		// if the operator was already set, then we treat it like an equals
+		else if (CALC_STATE.operator) {
+			
+			_processCalcEquals();
+			
+			// var v = roundNumber(CALC_STATE.readout);
+
+			// _processCalcEquals();
+
+			// CALC_STATE.operands[1] = roundNumber(CALC_STATE.readout);
+			// CALC_STATE.operands[0] = 0;
+			// CALC_STATE.operator = myButtonData.op;
+			// CALC_STATE.state = 'opsetwait';
+
+			// push the value onto the operand stack
+			var v = roundNumber(CALC_STATE.readout);
+			CALC_STATE.operands[1] = v;
+			CALC_STATE.operands[0] = 0;
+			CALC_STATE.operator = myButtonData.op;
+			CALC_STATE.state = 'opsetwait';
+
+		}
+
 		else {
-			CALC_STATE.operator = aButtonData.op;
+			console.log("setop called but we're in some odd unknown state, not doing anything...")
 		}
 	}
-	else if (aButtonData.action == 'equals') {
+	
+
+	if (myButtonData.action == 'equals') {
 
 		CALC_STATE.justCleared = false;
 
 		// only proceed if not in opsetwait mode and if there is an operator
 		if (CALC_STATE.state == 'input' && CALC_STATE.operator) {
-
-			var myOperator = CALC_STATE.operator;
-			addTapeRow(CALC_STATE.operands[0], myOperator);
-
-			var v = null;
-
-			console.log("Doing calculation: " + CALC_STATE.operator);
-			if (CALC_STATE.operator == '+') {
-				v = roundNumber(CALC_STATE.operands[1] + CALC_STATE.operands[0]);
-			}
-			else if (CALC_STATE.operator == '-') {
-				v = roundNumber(CALC_STATE.operands[1] - CALC_STATE.operands[0]);
-			}
-			else if (CALC_STATE.operator == '/') {
-				v = roundNumber(CALC_STATE.operands[1] / CALC_STATE.operands[0]);
-			}
-			else if (CALC_STATE.operator == '*') {
-				v = roundNumber(CALC_STATE.operands[1] * CALC_STATE.operands[0]);
-			}
-			console.log("Result of calculation is " + v);
-
-			CALC_STATE.operands = [v];
-			CALC_STATE.operator = null;
-			CALC_STATE.state = 'postcalc';
-			CALC_STATE.readout = numberToString(v);
-
-			addTapeRow(null, 'separator');
-
-			addTapeRow(v, 'total');
-
+			_processCalcEquals();
 		}
 
-	}
-	else {
-		console.log("unrecognized action: " + aButtonData.action);
 	}
 
 	// update the last operand
 	CALC_STATE.operands[0] = roundNumber(CALC_STATE.readout);
 
 	updateDisplay();
+
+}
+
+/** helper called from processButtonPress() */
+function _processCalcEquals() {
+
+	var myOperator = CALC_STATE.operator;
+	addTapeRow(CALC_STATE.operands[0], myOperator);
+
+	var v = null;
+
+	console.log("Doing calculation: " + CALC_STATE.operator);
+	if (CALC_STATE.operator == '+') {
+		v = roundNumber(CALC_STATE.operands[1] + CALC_STATE.operands[0]);
+	}
+	else if (CALC_STATE.operator == '-') {
+		v = roundNumber(CALC_STATE.operands[1] - CALC_STATE.operands[0]);
+	}
+	else if (CALC_STATE.operator == '/') {
+		v = roundNumber(CALC_STATE.operands[1] / CALC_STATE.operands[0]);
+	}
+	else if (CALC_STATE.operator == '*') {
+		v = roundNumber(CALC_STATE.operands[1] * CALC_STATE.operands[0]);
+	}
+	console.log("Result of calculation is " + v);
+
+	CALC_STATE.operands = [v];
+	CALC_STATE.operator = null;
+	CALC_STATE.state = 'postcalc';
+	CALC_STATE.readout = numberToString(v);
+
+	addTapeRow(null, 'separator');
+
+	addTapeRow(v, 'total');
 
 }
 
