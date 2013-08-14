@@ -1,0 +1,5 @@
+ROADMAP
+
+* add color rotation to final total (some stuff in there but needs more love)
+* add commas so the numbers read nicer
+* make the tape scroll on ipad
