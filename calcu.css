@@ -57,6 +57,7 @@ body {
 	color: #092f5b;
 	background: #e2f5fb;
 	font-weight: bold;
+	font-size: 52px;
 }
 
 #main #tape_detail .blank {
@@ -155,19 +156,25 @@ body {
 }
 
 #main .calc_12 {
-	background: url('images/calcu_12.jpg');
-	width: 352px;
+	background: url('images/calcu_12a.jpg');
+	width: 174px;
 	height: 139px;
 }
 
 #main .calc_13 {
-	background: url('images/calcu_13.jpg');
-	width: 182px;
+	background: url('images/calcu_13a.jpg');
+	width: 178px;
 	height: 139px;
 }
 
 #main .calc_14 {
-	background: url('images/calcu_14.jpg');
+	background: url('images/calcu_14a.jpg');
+	width: 182px;
+	height: 139px;
+}
+
+#main .calc_14b {
+	background: url('images/calcu_14b.jpg');
 	width: 177px;
 	height: 139px;
 }
