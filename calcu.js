@@ -4,7 +4,8 @@ var CALC_STATE = {
 	operator: null, // the current operator: / * - +
 	operands: [0], // the operand stack
 	readout: '0', // the currently in the readout
-	justCleared: false,
+	justCleared: false, // flag to indicate if we just cleared
+	keyPressed: null, // set to the textual code for the key currently pressed
 	state: 'input', // current state:
 					//   input (normal mode)
 					//   opsetwait (after you set an operator the first time and next key is new number)
@@ -35,9 +36,13 @@ var KEY_DATA = {
 
 function keyStateDown(aKeyName) {
 	$('#'+aKeyName).addClass('down');
+	CALC_STATE.keyPressed = aKeyName;
 }
 
 function keyStateUp(aKeyName) {
+	if (!aKeyName) {
+		aKeyName = CALC_STATE.keyPressed;
+	}
 	$('#'+aKeyName).removeClass('down');
 	var myData = KEY_DATA[aKeyName];
 	if (myData) {
@@ -46,6 +51,8 @@ function keyStateUp(aKeyName) {
 	else {
 		console.log("got keyStateUp for an unrecognized key name: " + aKeyName);
 	}
+
+	CALC_STATE.keyPressed = null;
 }
 
 /**
@@ -349,6 +356,20 @@ $(function() {
 			keyStateUp(e.target.id);
 		}
 	});
+
+	document.ontouchstart = function(e) {
+    	e.preventDefault();
+		if (e.target && e.target.id && (e.target.id+'').match(/^key_/)) {
+			keyStateDown(e.target.id);
+		}
+	}
+
+	document.ontouchend = function(e) {
+    	e.preventDefault();
+		if (e.target && e.target.id && (e.target.id+'').match(/^key_/)) {
+			keyStateUp(null);
+		}
+	}
 
 	// clear everything out
 	processButtonPress(KEY_DATA.key_clear);
