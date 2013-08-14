@@ -47,11 +47,17 @@ body {
 	background: url('images/paper_roll_divider.png') no-repeat top right;
 	padding-top: 10px;
 }
-#main #tape_detail .row.total:last-child {
+#main #tape_detail .row.total {
+	color: #092f5b;
+}
+#main #tape_detail .row.last-total { 
+	color: #092f5b;
 	background: #e2f5fb;
+	font-weight: bold;
+
 }
 #main #tape_detail .blank {
-	height: 80px;
+	height: 280px;
 }
 ::-webkit-scrollbar {
     width: 35px;
