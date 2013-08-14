@@ -49,9 +49,10 @@ body {
 }
 #main #tape_detail .row.total {
 	color: #092f5b;
+	background: #ffffff;
+	-webkit-transition: background-color 300ms linear;
 }
 
-/*#main #tape_detail .row.last-total { */
 #main #tape_detail .row.total:last-child { 
 	color: #092f5b;
 	background: #e2f5fb;
