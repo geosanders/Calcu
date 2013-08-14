@@ -104,6 +104,12 @@ body {
 	height: 93px;
 }
 
+#main.main-ipad .calc_01 {
+	background: url('images/calcu_01-ipad.jpg');
+	width: 1440px;
+	height: 93px;
+}
+
 #main .calc_02 {
 	background: url('images/calcu_02.jpg');
 	width: 133px;
@@ -123,15 +129,26 @@ body {
 }
 
 #main .calc_05 {
-	background: url('images/calcu_05.jpg');
+	background: url('images/calcu_05.jpg') right;
 	width: 881px;
 	height: 891px;
+}
+
+#main.main-ipad .calc_05 {
+	background: url('images/calcu_05.jpg') right;
+	width: 563px;
 }
 
 #main .calc_07 {
 	background: url('images/calcu_07.jpg');
 	width: 133px;
 	height: 987px;
+}
+
+#main .calc_08 {
+	background: url('images/calcu_08.jpg');
+	width: 8px;
+	height: 881px;
 }
 
 #main .calc_08 {
@@ -275,6 +292,12 @@ body {
 #main .calc_30 {
 	background: url('images/calcu_30.jpg');
 	width: 1654px;
+	height: 96px;
+}
+
+#main.main-ipad .calc_30 {
+	background: url('images/calcu_30-ipad.jpg');
+	width: 1241px;
 	height: 96px;
 }
 
