@@ -13,6 +13,9 @@ body {
 }
 
 #main td {
+	background: #949494;
+}
+#main td {
 	vertical-align: top;
 }
 #main #tape_detail {
