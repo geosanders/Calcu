@@ -159,7 +159,7 @@ function processButtonPress(aButtonData) {
 		else if (CALC_STATE.operator) {
 			
 			_processCalcEquals();
-			
+
 			// var v = roundNumber(CALC_STATE.readout);
 
 			// _processCalcEquals();
@@ -387,7 +387,7 @@ $(function() {
 
 	$('.key').mouseup(function(e) {
 		if (e.target && e.target.id && (e.target.id+'').match(/^key_/)) {
-			keyStateUp(e.target.id);
+			keyStateUp(null);
 		}
 	});
 
