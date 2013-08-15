@@ -1,0 +1,68 @@
+#!/bin/sh
+# This is the init script for starting up a
+#  Tomcat server
+#
+# chkconfig: 345 91 10
+# description: Starts and stops the Tomcat daemon.
+#
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+# Get config.
+. /etc/sysconfig/network
+
+# Check that networking is up.
+[ "${NETWORKING}" = "no" ] && exit 0
+
+#tomcat=/opt/tomcat-instances/crm/
+#startup=$tomcat/bin/startup.sh
+#shutdown=$tomcat/bin/shutdown.sh
+#export JAVA_HOME=/usr/local/jdk
+#tomcat_user=apache
+workdir=/opt/Calcu
+
+start(){
+ echo -n $"Starting Calcu service: "
+ daeon
+ #daemon -c
+ #$startup
+ su -s /bin/bash - $tomcat_user -c "$startup"
+ RETVAL=$?
+ echo
+}
+
+stop(){
+ action $"Stopping Calcu service: " su -s /bin/bash - $tomcat_user "$shutdown"
+ RETVAL=$?
+ echo
+}
+
+restart(){
+  stop
+  start
+}
+
+
+# See how we were called.
+case "$1" in
+start)
+ start
+ ;;
+stop)
+ stop
+ ;;
+status)
+      # This doesn't work ;)
+ status tomcat
+ ;;
+restart)
+ restart
+ ;;
+*)
+ echo $"Usage: $0 {start|stop|status|restart}"
+ exit 1
+esac
+
+exit 0
+
