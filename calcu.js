@@ -352,6 +352,26 @@ $(function() {
 
 	// $('#main').hide().fadeIn();
 
+
+	var ws = new WebSocket('ws://'+window.location.host+'/main');
+	ws.onmessage = function(e) {
+		console.log(e.data);
+	};
+	// When the connection is open, send some data to the server
+	ws.onopen = function () {
+		ws.send(JSON.stringify({'action':'setDisplay','value':'0'}));
+	};
+
+	// Log errors
+	ws.onerror = function (error) {
+	  console.log('WebSocket Error ' + error);
+	};
+
+	// Log messages from the server
+	ws.onmessage = function (e) {
+	  console.log('Ack back from server: ' + e.data);
+	};
+
 	$(document).keydown(function(e) {
 		// console.log("Key down: " + e.keyCode);
 		for (var i in KEY_DATA) {
