@@ -1,4 +1,4 @@
-con
+MS_001con
 
   _clkmode = xtal1 + pll4x                                      ' run @ 20MHz in XTAL mode
   _xinfreq = 5_000_000                                          ' use 5MHz crystal
@@ -47,6 +47,9 @@ con
   ' how full does it have to be to be considered "pressed"
   BUCKET_THRESHOLD = 60
 
+  ' how many samples to run when we do debug sampling (measured in words)
+  SAMPLE_WORD_SIZE = 500
+
 obj
   leds  : "jm_pwm8"
   term : "PC_Interface"
@@ -94,7 +97,7 @@ var
 
   long run_io_stack[16]
 
-  byte  data_buf[10000]                                                          ' temp buffer for strobe data
+  word  sample_buffer[SAMPLE_WORD_SIZE]                                         ' sample data storage
 
 pub main | pin_state, cycle_count, i, tmp
 
@@ -110,15 +113,20 @@ pub main | pin_state, cycle_count, i, tmp
 
   bucket_reset
 
-  term.str(string(34, "LED LIGHT SHOW", 34, 13))
-
-  light_show
+  'term.str(string(34, "LED LIGHT SHOW", 34, 13))
+  'light_show
 
   term.str(string(34, "STARTING IO COG", 34, 13))
 
   cognew(run_io, @run_io_stack)
 
+  pause(1000)
+
   term.str(string(34, "ACTIVATED", 34, 13))
+
+  'pin_state := (ina[0..8] << 7) & %1111111110000000
+  'pin_state := (ina[0..8] << 7) & %1111111110000000
+  'term.str(ltoa16(pin_state, 4))
 
 
   test_buf[0] := 0
@@ -132,7 +140,9 @@ pub main | pin_state, cycle_count, i, tmp
 
   pause(1000)
 
-  pin_state := 0
+  ' for debugging - dump out the raw key data
+  'run_and_output_sample
+  'return
 
   i := 0
 
@@ -174,13 +184,13 @@ pub run_io                                              ' runs in a separate cog
 pub bucket_io_update | pin_state, i, key_mask           ' do one cycle of reading the pins and updating the buckets
 
   ' read pins
-  pin_state := ina[0..8]
+  pin_state := (ina[0..8] << 7) & %1111111110000000
 
   ' for each key, check if it's pattern matches the current pin state
   i := 0
   repeat KEY_COUNT
 
-    key_mask := KEY_MASKS[i]
+    key_mask := KEY_MASKS.word[i]
     if pin_state & key_mask == key_mask                 ' is this key pressed
       key_buckets[i] += BUCKET_ON_VAL                   ' yes, add to bucket
     else
@@ -200,6 +210,23 @@ pub bucket_reset | i                                    ' set buckets to initial
   repeat KEY_COUNT
     key_buckets[i++] := BUCKET_MIN
 
+pub run_and_output_sample | pin_state, i
+  ' sample the pins and output what we saw (for debugging)
+
+  i := 0
+
+  repeat SAMPLE_WORD_SIZE
+    ' read pins
+    pin_state := (ina[0..8] << 7) & %1111111110000000
+    'pin_state := (ina[0..8] << 7) ' & %1111111110000000
+    'pin_state := ina[0..8]
+    sample_buffer[i++] := pin_state
+    'pause(1)
+
+  i := 0
+  repeat SAMPLE_WORD_SIZE
+    term.str(ltoa16(sample_buffer[i++], 4))
+    term.str(string(13))
 
 pub io_setup                                          ' set up our basic I/O
 
@@ -214,24 +241,10 @@ pub io_setup                                          ' set up our basic I/O
   pause(5)
 
   ' clear all output
-  outa[0] := 0
-  outa[1] := 0
-  outa[2] := 0
-  outa[3] := 0
-  outa[4] := 0
-  outa[5] := 0
-  outa[6] := 0
-  outa[7] := 0
+  outa[0..9] := 0
 
   ' set pin directions
-  dira[0] := 0
-  dira[1] := 0
-  dira[2] := 0
-  dira[3] := 0
-  dira[4] := 0
-  dira[5] := 0
-  dira[6] := 0
-  dira[7] := 0
+  dira[0..8] := 0
 
 
 pub light_show
