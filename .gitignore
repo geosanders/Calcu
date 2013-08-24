@@ -5,4 +5,8 @@
 
 *.sublime*
 
+bin
+pkg
+gocalcu/src/code.google.com
+gocalcu/src/github.com
 
