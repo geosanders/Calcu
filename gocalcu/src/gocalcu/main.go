@@ -3,11 +3,13 @@ package main
 
 import "code.google.com/p/go.net/websocket"
 import "github.com/jessevdk/go-flags"
+import "github.com/tarm/goserial"
 import "net/http"
 import "io"
 import "fmt"
 import "strconv"
-// import "reflect"
+import "bytes"
+
 
 var opts struct {
 
@@ -22,6 +24,28 @@ var opts struct {
 }
 
 func main() {
+
+
+	c := &serial.Config{Name: "/dev/tty.usbserial-A900YUBL", Baud: 115200}
+	s, err := serial.OpenPort(c)
+	if err != nil {
+		panic(err.Error())
+	}
+
+ 	var buffer bytes.Buffer
+
+	buf := make([]byte, 128)
+	for true {
+    	n, err := s.Read(buf)
+    	if err != nil {
+    		panic(err.Error())
+    	}
+    	buffer.Write(buf[0:n])
+    	fmt.Printf("Got data: ", buffer.String())
+    }
+
+    // c.Close() // hm, this only exists on windows...
+
 
 	/////////////////////////////////
 	// defaults
@@ -85,5 +109,16 @@ func main() {
 
 
 func EchoServer(ws *websocket.Conn) {
+
+	// c := &serial.Config{Name: "/dev/tty.usbserial-A900YUBL-11", Baud: 115200}
+	// s, err := serial.OpenPort(c)
+	// if err != nil {
+	// 	msg := err.Error()
+	// 	b, _ := json.Marshal(m)
+	// 	ws.Write("{\"error\":"+b+"}")
+	// 	return
+	// }
+
+	// /dev/tty.usbserial-A900YUBL
 	io.Copy(ws, ws)
 }

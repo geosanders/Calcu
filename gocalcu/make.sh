@@ -13,6 +13,7 @@ echo "Getting dependencies..."
 # get dependencies if not done already
 go get code.google.com/p/go.net/websocket
 go get github.com/jessevdk/go-flags
+go get github.com/tarm/goserial
 
 echo "Building..."
 
