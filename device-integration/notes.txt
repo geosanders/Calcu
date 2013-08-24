@@ -10,6 +10,7 @@ F - Or
 G - BrW
 Y - Br
 Z - OrW
+X - Gr(1)
 O - Or(1)
 + - Br(1)
 - - BrW(1)
