@@ -70,17 +70,8 @@ pub main | wait_time, qnum, qptr
     wait_time := ((||rand.random) // 5000) + 2000
     pause(wait_time)
 
-'    leds.digital(128, %11111111)
-'    pause(wait_time)
-'    leds.digital(0, %11111111)
-
   return
 
-  repeat
-    leds.digital(0, %11111111)
-    pause(1000)
-    leds.digital(128, %11111111)
-    pause(1000)
 
 
 pub pause(ms) | t
