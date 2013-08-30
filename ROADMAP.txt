@@ -1,5 +1,8 @@
 ROADMAP
 
+* build python server component (web socket)
+
+* verify the rounding is correct
 * add color rotation to final total (some stuff in there but needs more love)
 * add commas so the numbers read nicer
-* make the tape scroll on ipad
+* make the tape scrollable on ipad
