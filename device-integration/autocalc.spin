@@ -56,7 +56,7 @@ pub main | wait_time, qnum, qcount, qptr
 
     term.str(string(34))
     term.str(qptr)
-    term.str(string(34, 13))
+    term.str(string(34, 10))
 
     pause(50)
     leds.digital(0, %11111111)
