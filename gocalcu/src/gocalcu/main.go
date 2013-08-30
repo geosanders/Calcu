@@ -104,7 +104,7 @@ func main() {
 	fmt.Printf("Starting Web Server...\n")
 
 	http.Handle("/", http.FileServer(http.Dir("../")))
-	http.Handle("/echo", websocket.Handler(func (ws *websocket.Conn) {
+	http.Handle("/serial-relay", websocket.Handler(func (ws *websocket.Conn) {
 		var outstr string
 		for true {
 			// read next event
