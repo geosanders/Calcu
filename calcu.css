@@ -84,10 +84,12 @@ body {
 }
 
 #main #readout_op .inner {
-	padding-top: 20px;
-	padding-left: 25px;
-	color: #fff;
-	font-size: 90px;
+	padding-top: 26px;
+	padding-left: 50px;
+	color: #999;
+	font-size: 115px;
+	text-shadow: #ddd 1px 1px 0px;
+	text-shadow: black -1px -1px 0px;
 }
 
 #main #readout .inner {
@@ -292,9 +294,15 @@ body {
 	height: 893px;
 }
 
-#main .sharp-calc_03 {
+#main .sharp-calc_03a {
 	background: url('images/sharp-calc_03.jpg');
-	width: 913px;
+	width: 178px;
+	height: 186px;
+}
+
+#main .sharp-calc_03b {
+	background: url('images/sharp-calc_03.jpg') right top;
+	width: 735px;
 	height: 186px;
 }
 
@@ -434,8 +442,4 @@ body {
 	background: url('images/sharp-calc_26.jpg');
 	width: 1920px;
 	height: 94px;
-}
-
-#main .key {
-	background-position: top;
 }
