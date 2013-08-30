@@ -2,7 +2,7 @@
 package main
 
 import "net/http"
-import "io"
+// import "io"
 import "fmt"
 import "strconv"
 // import "bytes"
@@ -11,6 +11,7 @@ import "code.google.com/p/go.net/websocket"
 import "github.com/jessevdk/go-flags"
 // import "github.com/tarm/goserial"
 // import "encoding/hex"
+import "encoding/json"
 
 
 var opts struct {
@@ -78,6 +79,8 @@ func main() {
 	// 	fmt.Printf("arg: " + args[i] + "\n")
 	// }
 
+	// a channel for the events we read from the serial port
+	event_channel := make(chan string)
 
 
 	// run IO separately
@@ -107,8 +110,22 @@ func main() {
 		// line := scanner.Text()
 		for scanner.Scan() {
 			line := scanner.Text()
-			fmt.Printf("got line: %s\n", line)
+			// fmt.Printf("got line: %s\n", line)
+			var v interface{}
+			err2 := json.Unmarshal([]byte(line), &v)
+			if err2 == nil {
+				switch v.(type) {
+					case string: {
+						vs := v.(string)
+						fmt.Printf("string value: %s\n", vs)
+						// push to channel
+						event_channel <- vs
+						break
+					}
+				}
+			}
 		}
+
 
 
 		// var buffer bytes.Buffer
@@ -140,7 +157,20 @@ func main() {
 	fmt.Printf("Starting Web Server...\n")
 
 	http.Handle("/", http.FileServer(http.Dir("../")))
-	http.Handle("/echo", websocket.Handler(EchoServer))
+	http.Handle("/echo", websocket.Handler(func (ws *websocket.Conn) {
+		var outstr string
+		for true {
+			// read next event
+			outstr = <- event_channel
+			// write it out to websocket
+			_, err := ws.Write([]byte(outstr))
+			if err != nil {
+				break
+			}
+		}
+		// ws.Write
+		// io.Copy(ws, ws)
+	}))
 
 	fmt.Printf("Running\n")
 
@@ -152,17 +182,17 @@ func main() {
 }
 
 
-func EchoServer(ws *websocket.Conn) {
+// func EchoServer(ws *websocket.Conn) {
 
-	// c := &serial.Config{Name: "/dev/tty.usbserial-A900YUBL-11", Baud: 115200}
-	// s, err := serial.OpenPort(c)
-	// if err != nil {
-	// 	msg := err.Error()
-	// 	b, _ := json.Marshal(m)
-	// 	ws.Write("{\"error\":"+b+"}")
-	// 	return
-	// }
+// 	// c := &serial.Config{Name: "/dev/tty.usbserial-A900YUBL-11", Baud: 115200}
+// 	// s, err := serial.OpenPort(c)
+// 	// if err != nil {
+// 	// 	msg := err.Error()
+// 	// 	b, _ := json.Marshal(m)
+// 	// 	ws.Write("{\"error\":"+b+"}")
+// 	// 	return
+// 	// }
 
-	// /dev/tty.usbserial-A900YUBL
-	io.Copy(ws, ws)
-}
+// 	// /dev/tty.usbserial-A900YUBL
+// 	io.Copy(ws, ws)
+// }
