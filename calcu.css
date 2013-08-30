@@ -13,7 +13,7 @@ body {
 }
 
 #main td {
-	background: #949494;
+	
 }
 #main td {
 	vertical-align: top;
@@ -28,11 +28,11 @@ body {
 	padding-top: 10px;
 }
 #main #tape_detail .row {
-	width: 800px;
+	/* width: 800px; */
 	margin-bottom: 40px;
 	padding-right: 10px;
 	padding-left: 10px;
-	margin-left: 12px;
+	margin-left: 35px;
 }
 #main #tape_detail .row.plus {
 	color: #007e00;
@@ -67,7 +67,7 @@ body {
 	height: 280px;
 }
 ::-webkit-scrollbar {
-    width: 35px;
+    width: 25px;
 }
  
 ::-webkit-scrollbar-track {
@@ -93,7 +93,7 @@ body {
 #main #readout .inner {
 	text-align: right;
 	color: #fff;
-	font-size: 85px;
+	font-size: 115px;
 	padding-top: 26px;
 	padding-right: 45px;
 }
@@ -101,12 +101,6 @@ body {
 #main .calc_01 {
 	background: url('images/calcu_01.jpg');
 	width: 1920px;
-	height: 93px;
-}
-
-#main.main-ipad .calc_01 {
-	background: url('images/calcu_01-ipad.jpg');
-	width: 1440px;
 	height: 93px;
 }
 
@@ -129,26 +123,15 @@ body {
 }
 
 #main .calc_05 {
-	background: url('images/calcu_05.jpg') right;
+	background: url('images/calcu_05.jpg');
 	width: 881px;
 	height: 891px;
-}
-
-#main.main-ipad .calc_05 {
-	background: url('images/calcu_05.jpg') right;
-	width: 563px;
 }
 
 #main .calc_07 {
 	background: url('images/calcu_07.jpg');
 	width: 133px;
 	height: 987px;
-}
-
-#main .calc_08 {
-	background: url('images/calcu_08.jpg');
-	width: 8px;
-	height: 881px;
 }
 
 #main .calc_08 {
@@ -176,97 +159,97 @@ body {
 }
 
 #main .calc_12 {
-	background: url('images/calcu_12a.jpg');
+	background: url('images/calcu_12a.jpg') #949494;
 	width: 174px;
 	height: 139px;
 }
 
 #main .calc_13 {
-	background: url('images/calcu_13a.jpg');
+	background: url('images/calcu_13a.jpg') #949494;
 	width: 178px;
 	height: 139px;
 }
 
 #main .calc_14 {
-	background: url('images/calcu_14a.jpg');
+	background: url('images/calcu_14a.jpg') #949494;
 	width: 182px;
 	height: 139px;
 }
 
 #main .calc_14b {
-	background: url('images/calcu_14b.jpg');
+	background: url('images/calcu_14b.jpg') #949494;
 	width: 177px;
 	height: 139px;
 }
 
 #main .calc_15 {
-	background: url('images/calcu_15.jpg');
+	background: url('images/calcu_15.jpg') #949494;
 	width: 174px;
 	height: 142px;
 }
 
 #main .calc_16 {
-	background: url('images/calcu_16.jpg');
+	background: url('images/calcu_16.jpg') #949494;
 	width: 178px;
 	height: 142px;
 }
 
 #main .calc_17 {
-	background: url('images/calcu_17.jpg');
+	background: url('images/calcu_17.jpg') #949494;
 	width: 182px;
 	height: 142px;
 }
 
 #main .calc_18 {
-	background: url('images/calcu_18.jpg');
+	background: url('images/calcu_18.jpg') #949494;
 	width: 177px;
 	height: 142px;
 }
 
 #main .calc_19 {
-	background: url('images/calcu_19.jpg');
+	background: url('images/calcu_19.jpg') #949494;
 	width: 174px;
 	height: 135px;
 }
 
 #main .calc_20 {
-	background: url('images/calcu_20.jpg');
+	background: url('images/calcu_20.jpg') #949494;
 	width: 178px;
 	height: 135px;
 }
 
 #main .calc_21 {
-	background: url('images/calcu_21.jpg');
+	background: url('images/calcu_21.jpg') #949494;
 	width: 182px;
 	height: 135px;
 }
 
 #main .calc_22 {
-	background: url('images/calcu_22.jpg');
+	background: url('images/calcu_22.jpg') #949494;
 	width: 177px;
 	height: 135px;
 }
 
 #main .calc_23 {
-	background: url('images/calcu_23.jpg');
+	background: url('images/calcu_23.jpg') #949494;
 	width: 174px;
 	height: 140px;
 }
 
 #main .calc_24 {
-	background: url('images/calcu_24.jpg');
+	background: url('images/calcu_24.jpg') #949494;
 	width: 178px;
 	height: 140px;
 }
 
 #main .calc_25 {
-	background: url('images/calcu_25.jpg');
+	background: url('images/calcu_25.jpg') #949494;
 	width: 182px;
 	height: 140px;
 }
 
 #main .calc_26 {
-	background: url('images/calcu_26.jpg');
+	background: url('images/calcu_26.jpg') #949494;
 	width: 177px;
 	height: 277px;
 }
@@ -295,10 +278,162 @@ body {
 	height: 96px;
 }
 
-#main.main-ipad .calc_30 {
-	background: url('images/calcu_30-ipad.jpg');
-	width: 1241px;
-	height: 96px;
+
+
+#main .sharp-calc_01 {
+	background: url('images/sharp-calc_01.jpg');
+	width: 1920px;
+	height: 93px;
+}
+
+#main .sharp-calc_02 {
+	background: url('images/sharp-calc_02.jpg');
+	width: 151px;
+	height: 893px;
+}
+
+#main .sharp-calc_03 {
+	background: url('images/sharp-calc_03.jpg');
+	width: 913px;
+	height: 186px;
+}
+
+#main .sharp-calc_04 {
+	background: url('images/sharp-calc_04.jpg');
+	width: 725px;
+	height: 893px;
+}
+
+#main .sharp-calc_05 {
+	background: url('images/sharp-calc_05.jpg');
+	width: 131px;
+	height: 893px;
+}
+
+#main .sharp-calc_06 {
+	background: url('images/sharp-calc_06.jpg');
+	width: 178px;
+	height: 140px;
+}
+
+#main .sharp-calc_07 {
+	background: url('images/sharp-calc_07.jpg');
+	width: 179px;
+	height: 140px;
+}
+
+#main .sharp-calc_08 {
+	background: url('images/sharp-calc_08.jpg');
+	width: 556px;
+	height: 140px;
+}
+
+#main .sharp-calc_09 {
+	background: url('images/sharp-calc_09.jpg');
+	width: 178px;
+	height: 142px;
+}
+
+#main .sharp-calc_10 {
+	background: url('images/sharp-calc_10.jpg');
+	width: 179px;
+	height: 141px;
+}
+
+#main .sharp-calc_11 {
+	background: url('images/sharp-calc_11.jpg');
+	width: 182px;
+	height: 142px;
+}
+
+#main .sharp-calc_12 {
+	background: url('images/sharp-calc_12.jpg');
+	width: 208px;
+	height: 142px;
+}
+
+#main .sharp-calc_13 {
+	background: url('images/sharp-calc_13.jpg');
+	width: 166px;
+	height: 142px;
+}
+
+#main .sharp-calc_14 {
+	background: url('images/sharp-calc_14.jpg');
+	width: 179px;
+	height: 135px;
+}
+
+#main .sharp-calc_15 {
+	background: url('images/sharp-calc_15.jpg');
+	width: 178px;
+	height: 135px;
+}
+
+#main .sharp-calc_16 {
+	background: url('images/sharp-calc_16.jpg');
+	width: 182px;
+	height: 135px;
+}
+
+#main .sharp-calc_17 {
+	background: url('images/sharp-calc_17.jpg');
+	width: 208px;
+	height: 425px;
+}
+
+#main .sharp-calc_18 {
+	background: url('images/sharp-calc_18.jpg');
+	width: 166px;
+	height: 135px;
+}
+
+#main .sharp-calc_19 {
+	background: url('images/sharp-calc_19.jpg');
+	width: 179px;
+	height: 141px;
+}
+
+#main .sharp-calc_20 {
+	background: url('images/sharp-calc_20.jpg');
+	width: 178px;
+	height: 140px;
+}
+
+#main .sharp-calc_21 {
+	background: url('images/sharp-calc_21.jpg');
+	width: 182px;
+	height: 140px;
+}
+
+#main .sharp-calc_22 {
+	background: url('images/sharp-calc_22.jpg');
+	width: 166px;
+	height: 290px;
+}
+
+#main .sharp-calc_23 {
+	background: url('images/sharp-calc_23.jpg');
+	width: 178px;
+	height: 150px;
+}
+
+#main .sharp-calc_24 {
+	background: url('images/sharp-calc_24.jpg');
+	width: 179px;
+	height: 150px;
+}
+
+#main .sharp-calc_25 {
+	background: url('images/sharp-calc_25.jpg');
+	width: 182px;
+	height: 150px;
+}
+
+#main .sharp-calc_26 {
+	background: url('images/sharp-calc_26.jpg');
+	width: 1920px;
+	height: 94px;
 }
 
 #main .key {
