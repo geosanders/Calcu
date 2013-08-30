@@ -63,7 +63,7 @@ pub main | wait_time, qnum, qptr
 
     leds.digital(128, %11111111) ' FIXME, why does this only flash one LED?
     term.str(qptr)
-    term.str(string(13))
+    term.str(string(10))
     pause(50)
     leds.digital(0, %11111111)
 

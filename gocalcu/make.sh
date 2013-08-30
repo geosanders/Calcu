@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo "NOTE: go version 1.1+ required"
+
 pushd . > /dev/null
 ABSPATH=$(cd "$(dirname "$0")"; pwd)
 popd > /dev/null
