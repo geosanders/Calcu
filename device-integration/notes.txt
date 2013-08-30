@@ -1,0 +1,27 @@
+Notes
+
+Wiring on Calculator:
+
+A - BlW
+B - GrW
+C - Bl
+E - Gr
+F - Or
+G - BrW
+Y - Br
+Z - OrW
+X - Gr(1)
+O - Or(1)
++ - Br(1)
+- - BrW(1)
+
+A/BlW - pulses if 1 button is pressed
+B/GrW - pulses
+C/Bl - pulses
+E/Gr - pulses
+F/Or - pulses
+G/BrW - pulses
+Y/Br - pulses
+Z/OrW - pulses
+
+

@@ -1,0 +1,4 @@
+#!/bin/bash
+
+python `dirname $0`/calcuserv.py -H 0.0.0.0 -p 8888 -w calcuserv/wsh --log-level debug --log-file calcuserv.log -d `dirname $0`/../
+
