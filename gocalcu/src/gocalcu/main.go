@@ -4,6 +4,7 @@ package main
 import "net/http"
 // import "io"
 import "fmt"
+import "strings"
 import "strconv"
 // import "bytes"
 import "bufio"
@@ -26,6 +27,8 @@ var opts struct {
 
 	SerialDevice string `short:"s" long:"serial" description:"Specifies the serial device to communicate with. If unspecified, read from the console.  (Mac example: /dev/tty.usbserial-A900YUBL, Windows example: COM1"`
 
+	SerialBaud uint `short:"b" long:"baud" description:"Specifies the baud rate (speed) at which to communicate with the serial port."`
+
 }
 
 func main() {
@@ -38,6 +41,7 @@ func main() {
 	opts.Interface = ""
 	opts.BaseDir = "../"
 	opts.SerialDevice = ""
+	opts.SerialBaud = 9600
 
 
 	parser := flags.NewParser(&opts, flags.Default)
@@ -67,25 +71,33 @@ func main() {
 	go func() {
 
 
-		s, err := createSerialReader(opts.SerialDevice)
+		s, err := createSerialReader(opts.SerialDevice, opts.SerialBaud)
 		if err != nil {
 			panic(err.Error())
 		}
 
+		if len(opts.Verbose) > 0 {
+			fmt.Printf("Starting to listen for serial IO...\n")
+		}
 
 		scanner := bufio.NewScanner(s)
 
 		// line := scanner.Text()
 		for scanner.Scan() {
 			line := scanner.Text()
-			// fmt.Printf("got line: %s\n", line)
+			if len(opts.Verbose) > 0 {
+				fmt.Printf("got line: %s\n", line)
+			}
+			line = "\"" + strings.TrimSpace(line) + "\""
 			var v interface{}
 			err2 := json.Unmarshal([]byte(line), &v)
 			if err2 == nil {
 				switch v.(type) {
 					case string: {
 						vs := v.(string)
-						// fmt.Printf("string value: %s\n", vs)
+						if len(opts.Verbose) > 0 {
+							fmt.Printf("string value: %s\n", vs)
+						}
 						// push to channel
 						event_channel <- vs
 						break

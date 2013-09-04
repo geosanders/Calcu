@@ -15,14 +15,18 @@ var CALC_STATE = {
 
 /* map key combinations to buttons and data */
 var KEY_DATA = {
+	// NOTES: "*" key acts like CE if pressed once and then fully clears if pressed again, with some funky edge cases
+	// CE specifically only deletes the current entry but the prior result is still there
 	key_backspace: { keys:[{code:8,shift:0}], action: 'backspace', serialCode: 'bs' },
 	key_clear: { keys:[{code:12,shift:1},{code:27,shift:0}], action: 'clear', serialCode: 'ce' },
 	key_divide: { keys:[{code:111,shift:0},{code:191,shift:0}], action: 'setop', op:'/', serialCode: 'div' },
 	key_times: { keys:[{code:106,shift:0}], action: 'setop', op:'*', serialCode: 'mul' },
 	key_minus: { keys:[{code:109,shift:0}], action: 'setop', op:'-', serialCode: '-' },
+	//key_plus: { keys:[{code:107,shift:0}], action: 'setop', op:'+', serialCode: '+' }, // on this device the + and = are the same key
 	key_plus: { keys:[{code:107,shift:0}], action: 'setop', op:'+', serialCode: '+' },
 	key_equals: { keys:[{code:13,shift:0}], action: 'equals', serialCode: '=' },
 	key_period: { keys:[{code:110,shift:0},{code:190,shift:0}], action: 'append', item:'.', serialCode: '.' },
+	key_00: { keys:[{code:96,shift:0},{code:48,shift:0}], action: 'append', item: '00', serialCode: '00' },
 	key_0: { keys:[{code:96,shift:0},{code:48,shift:0}], action: 'append', item: '0', serialCode: '0' },
 	key_1: { keys:[{code:97,shift:0},{code:49,shift:0}], action: 'append', item: '1', serialCode: '1' },
 	key_2: { keys:[{code:98,shift:0},{code:50,shift:0}], action: 'append', item: '2', serialCode: '2' },
@@ -406,10 +410,6 @@ function setupWebsocket() {
 
 	ws = new WebSocket('ws://'+window.location.host+'/serial-relay');
 
-	ws.onmessage = function(e) {
-		console.log(e.data);
-	};
-
 	// When the connection is open, send some data to the server
 	ws.onopen = function () {
 		console.log("Socket opened successfully")
@@ -425,13 +425,14 @@ function setupWebsocket() {
 
 	// Log messages from the server
 	ws.onmessage = function (e) {
-		var myKeyName = getKeyNameFromSerialCode(e.data);
+		var myData = (e.data+'').toLowerCase();
+		var myKeyName = getKeyNameFromSerialCode(myData);
 		if (myKeyName) {
 			console.log("Emulating key press: " + myKeyName);
 			emulateKeyPress(myKeyName);
 		}
 		else {
-			console.log("No key name could be found for serial code: " + e.data);
+			console.log("No key name could be found for serial code: " + myData);
 		}
 		// console.log('Ack back from server: ' + e.data);
 	};
