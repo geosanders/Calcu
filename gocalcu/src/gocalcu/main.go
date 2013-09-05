@@ -112,8 +112,9 @@ func main() {
 
 
 
-
-	fmt.Printf("Starting Web Server...\n")
+	if len(opts.Verbose) > 0 {
+		fmt.Printf("Starting Web Server...\n")
+	}
 
 	http.Handle("/", http.FileServer(http.Dir("../")))
 	http.Handle("/serial-relay", websocket.Handler(func (ws *websocket.Conn) {
@@ -129,7 +130,14 @@ func main() {
 		}
 	}))
 
-	fmt.Printf("Running\n")
+	if len(opts.Verbose) > 0 {
+		fmt.Printf("Running\n")
+		myHost := "localhost"
+		if len(opts.Interface) > 0 {
+			myHost = opts.Interface
+		}
+		fmt.Printf("Browse to http://%s:%d to view calculator\n", myHost, opts.Port)
+	}
 
 	herr := http.ListenAndServe(opts.Interface + ":" + strconv.Itoa(int(opts.Port)), nil)
 	if herr != nil {
