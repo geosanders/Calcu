@@ -46,6 +46,9 @@ body {
 #main #tape_detail .row.divide {
 	color: #007e00;
 }
+#main #tape_detail .row.equals {
+	color: #007e00;
+}
 #main #tape_detail .row.separator {
 	background: url('images/paper_roll_divider.png') no-repeat top right;
 	padding-top: 10px;
