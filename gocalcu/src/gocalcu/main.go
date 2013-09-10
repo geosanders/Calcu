@@ -3,6 +3,8 @@ package main
 
 import "net/http"
 // import "io"
+import "math/rand"
+import "time"
 import "fmt"
 import "strings"
 import "strconv"
@@ -116,16 +118,36 @@ func main() {
 		fmt.Printf("Starting Web Server...\n")
 	}
 
+	curRelay := int32(0)
+
 	http.Handle("/", http.FileServer(http.Dir("../")))
 	http.Handle("/serial-relay", websocket.Handler(func (ws *websocket.Conn) {
+
+		thisRelay := rand.Int31n(999999999)+1 // make sure we don't get a zero
+		curRelay = thisRelay
+
+		// our own timeout channel that times out after one second
+		timeout := make(chan bool, 1)
+		go func() {
+		    time.Sleep(1 * time.Second)
+		    timeout <- true
+		}()
+
+
 		var outstr string
-		for true {
-			// read next event
-			outstr = <- event_channel
-			// write it out to websocket
-			_, err := ws.Write([]byte(outstr))
-			if err != nil {
-				break
+		for thisRelay == curRelay {
+			select {
+				// read next event
+				case outstr = <- event_channel:
+					// write it out to websocket
+					_, err := ws.Write([]byte(outstr))
+					if err != nil {
+						// break out of for loop
+						thisRelay = 0
+					}
+					break
+				case <- timeout:
+					break
 			}
 		}
 	}))
