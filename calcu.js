@@ -37,8 +37,8 @@ var KEY_DATA = {
 	key_plus: { keys:[{code:107,shift:0}], action: 'setop', op:'+', serialCode: '+' },
 	key_equals: { keys:[{code:13,shift:0}], action: 'equals', serialCode: '=' },
 	key_period: { keys:[{code:110,shift:0},{code:190,shift:0}], action: 'append', item:'.', serialCode: '.' },
-	key_total: { keys:[], serialCode: '*' },
-	key_00: { keys:[{code:96,shift:0},{code:48,shift:0}], action: 'append', item: '00', serialCode: '00' },
+	key_total: { keys:[{code:84,shift:0}], serialCode: '*' },
+	key_00: { keys:[], action: 'append', item: '00', serialCode: '00' },
 	key_0: { keys:[{code:96,shift:0},{code:48,shift:0}], action: 'append', item: '0', serialCode: '0' },
 	key_1: { keys:[{code:97,shift:0},{code:49,shift:0}], action: 'append', item: '1', serialCode: '1' },
 	key_2: { keys:[{code:98,shift:0},{code:50,shift:0}], action: 'append', item: '2', serialCode: '2' },
@@ -171,15 +171,17 @@ function processButtonPress(aButtonData) {
 
 			var myVal = roundNumber(CALC_STATE.display);
 
+			console.log(CALC_STATE.lastop);
 			switch (CALC_STATE.lastop) {
 				case null:
+					// DISABLED - this caused all kinds of problems...
 					// last operation ended, if they press this again then we use whatever is
 					// in the display as a total
-					CALC_STATE.curval = myVal;
-					CALC_STATE.lastval = myVal;
-					CALC_STATE.lastop = "+"
-					addTapeRow(CALC_STATE.lastval, CALC_STATE.lastop);
-					break;
+					// CALC_STATE.curval = null;
+					// CALC_STATE.lastval = myVal;
+					// CALC_STATE.lastop = "+"
+					// addTapeRow(CALC_STATE.lastval, CALC_STATE.lastop);
+					// break;
 				case '+':
 				case '-':
 					// only update lastval to be the display if there is a curval (something typed)
@@ -217,13 +219,14 @@ function processButtonPress(aButtonData) {
 
 			switch (CALC_STATE.lastop) {
 				case null:
-					// last operation ended, if they press this again then we use whatever is
-					// in the display as a total
-					CALC_STATE.curval = myVal;
-					CALC_STATE.lastval = myVal;
-					CALC_STATE.lastop = "-"
-					addTapeRow(CALC_STATE.lastval, CALC_STATE.lastop);
-					break;
+					// DISABLED - this caused all kinds of problems...
+					// // last operation ended, if they press this again then we use whatever is
+					// // in the display as a total
+					// CALC_STATE.curval = myVal;
+					// CALC_STATE.lastval = myVal;
+					// CALC_STATE.lastop = "-"
+					// addTapeRow(CALC_STATE.lastval, CALC_STATE.lastop);
+					// break;
 				case '+':
 				case '-':
 					if (CALC_STATE.curval !== null) {
@@ -735,6 +738,8 @@ function setupWebsocket() {
 	  }, 3000);
 	};
 
+	ws.onclose = function() { console.log("Socket closed, not reconnecting since it was an intentional close"); }
+
 	// Log messages from the server
 	ws.onmessage = function (e) {
 		var myData = (e.data+'').toLowerCase();
@@ -758,7 +763,7 @@ $(function() {
 	setupWebsocket();
 
 	$(document).keydown(function(e) {
-		// console.log("Key down: " + e.keyCode);
+		console.log("Key down: " + e.keyCode);
 		for (var i in KEY_DATA) {
 			for (var j in KEY_DATA[i].keys) {
 				var myKeyData = KEY_DATA[i].keys[j];
