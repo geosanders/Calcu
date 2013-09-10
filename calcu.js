@@ -723,7 +723,11 @@ var ws;
 
 function setupWebsocket() {
 
-	ws = new WebSocket('ws://'+window.location.host+'/serial-relay');
+	if (typeof MozWebSocket != 'undefined') {
+		ws = new MozWebSocket('ws://'+window.location.host+'/serial-relay');
+	} else {
+		ws = new WebSocket('ws://'+window.location.host+'/serial-relay');
+	}
 
 	// When the connection is open, send some data to the server
 	ws.onopen = function () {
