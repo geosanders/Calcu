@@ -14,7 +14,7 @@ var CALC_STATE = {
 
 	// operands: [0], // the operand stack
 	// readout: '0', // the currently in the readout
-	// justCleared: false, // flag to indicate if we just cleared
+	justCleared: false, // flag to indicate if we just cleared
 	// keyPressed: null, // set to the textual code for the key currently pressed
 	// state: 'input', // current state:
 	// 				//   input (normal mode)
@@ -317,7 +317,16 @@ function processButtonPress(aButtonData) {
 			CALC_STATE.total = 0;
 			CALC_STATE.lastval = null;
 			CALC_STATE.lastop = null;
-	    	// updateDisplay();
+
+			if (CALC_STATE.justCleared) {
+				clearTape();
+			}
+
+	    	CALC_STATE.justCleared = true;
+
+	    	updateDisplay();
+
+	    	return;
 		} break;
 
 		case 'key_total': {
@@ -326,6 +335,7 @@ function processButtonPress(aButtonData) {
 
 	}
 
+	CALC_STATE.justCleared = false;
 	
 	updateDisplay();
 
