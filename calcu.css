@@ -57,6 +57,7 @@ body {
 	color: #092f5b;
 	background: #ffffff;
 	-webkit-transition: background-color 300ms linear;
+	margin-bottom: 80px;
 }
 
 #main #tape_detail .row.total:last-child { 

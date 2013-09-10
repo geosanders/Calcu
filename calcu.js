@@ -173,11 +173,21 @@ function processButtonPress(aButtonData) {
 
 			switch (CALC_STATE.lastop) {
 				case null:
+					// last operation ended, if they press this again then we use whatever is
+					// in the display as a total
+					CALC_STATE.curval = myVal;
+					CALC_STATE.lastval = myVal;
+					CALC_STATE.lastop = "+"
+					addTapeRow(CALC_STATE.lastval, CALC_STATE.lastop);
+					break;
 				case '+':
 				case '-':
-					CALC_STATE.total = applyOperator('+', CALC_STATE.total, myVal);
-					CALC_STATE.lastval = myVal;
+					// only update lastval to be the display if there is a curval (something typed)
+					if (CALC_STATE.curval !== null) {
+						CALC_STATE.lastval = myVal;
+					}
 					CALC_STATE.lastop = "+";
+					CALC_STATE.total = applyOperator('+', CALC_STATE.total, CALC_STATE.lastval);
 					CALC_STATE.curval = null;
 					CALC_STATE.display = numberToString(CALC_STATE.total);
 					addTapeRow(CALC_STATE.lastval, CALC_STATE.lastop);
@@ -207,10 +217,19 @@ function processButtonPress(aButtonData) {
 
 			switch (CALC_STATE.lastop) {
 				case null:
+					// last operation ended, if they press this again then we use whatever is
+					// in the display as a total
+					CALC_STATE.curval = myVal;
+					CALC_STATE.lastval = myVal;
+					CALC_STATE.lastop = "-"
+					addTapeRow(CALC_STATE.lastval, CALC_STATE.lastop);
+					break;
 				case '+':
 				case '-':
-					CALC_STATE.total = applyOperator('-', CALC_STATE.total, myVal);
-					CALC_STATE.lastval = myVal;
+					if (CALC_STATE.curval !== null) {
+						CALC_STATE.lastval = myVal;
+					}
+					CALC_STATE.total = applyOperator('-', CALC_STATE.total, CALC_STATE.lastval);
 					CALC_STATE.lastop = "-";
 					CALC_STATE.curval = null;
 					CALC_STATE.display = numberToString(CALC_STATE.total);
@@ -310,6 +329,26 @@ function processButtonPress(aButtonData) {
 
 		} break;
 
+		case 'key_total': {
+			
+			if (CALC_STATE.lastop === null)	{
+				addTapeRow(0, "total");
+				CALC_STATE.display = '0';
+				CALC_STATE.curval = 0;
+				CALC_STATE.total = 0;
+				CALC_STATE.lastval = null;
+				CALC_STATE.lastop = null;
+			}
+			else {
+				addTapeRow(CALC_STATE.total, "total");
+				CALC_STATE.curval = 0;
+				CALC_STATE.total = CALC_STATE.lastval;
+				CALC_STATE.display = numberToString(CALC_STATE.lastval);
+				CALC_STATE.lastop = null;
+			}
+
+		} break;
+
 		case 'key_clear': { // FIXME: is this "CE" or "C" ? (CE clears one entry whereas C clears everything)
 			// FIXME: this isn't exactly right, probably should not clear total, or something
 			CALC_STATE.display = '0';
@@ -327,10 +366,6 @@ function processButtonPress(aButtonData) {
 	    	updateDisplay();
 
 	    	return;
-		} break;
-
-		case 'key_total': {
-			console.log("Got total");
 		} break;
 
 	}
