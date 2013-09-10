@@ -15,12 +15,12 @@ var CALC_STATE = {
 /* map key combinations to buttons and data */
 var KEY_DATA = {
 	key_backspace: { keys:[{code:8,shift:0}], action: 'backspace' },
-	key_clear: { keys:[{code:12,shift:1},{code:27,shift:0}], action: 'clear' },
+	key_clear: { keys:[{code:12,shift:1},{code:27,shift:0},{code:67,shift:0},{code:67,shift:1},{code:9,shift:0}], action: 'clear' },
 	key_divide: { keys:[{code:111,shift:0},{code:191,shift:0}], action: 'setop', op:'/' },
-	key_times: { keys:[{code:106,shift:0}], action: 'setop', op:'*' },
-	key_minus: { keys:[{code:109,shift:0}], action: 'setop', op:'-' },
-	key_plus: { keys:[{code:107,shift:0}], action: 'setop', op:'+' },
-	key_equals: { keys:[{code:13,shift:0}], action: 'equals' },
+	key_times: { keys:[{code:106,shift:0},{code:56,shift:1}], action: 'setop', op:'*' },
+	key_minus: { keys:[{code:109,shift:0},{code:189,shift:0}], action: 'setop', op:'-' },
+	key_plus: { keys:[{code:107,shift:0},{code:187,shift:1}], action: 'setop', op:'+' },
+	key_equals: { keys:[{code:13,shift:0},{code:187,shift:0}], action: 'equals' },
 	key_period: { keys:[{code:110,shift:0},{code:190,shift:0}], action: 'append', item:'.' },
 	key_0: { keys:[{code:96,shift:0},{code:48,shift:0}], action: 'append', item: '0' },
 	key_1: { keys:[{code:97,shift:0},{code:49,shift:0}], action: 'append', item: '1' },
@@ -156,9 +156,10 @@ function processButtonPress(aButtonData) {
 		}
 
 		// if the operator was already set, then we treat it like an equals
+		// CHANGED: now we just overwrite what the operator is
 		else if (CALC_STATE.operator) {
 			
-			_processCalcEquals();
+			// _processCalcEquals();
 
 			// var v = roundNumber(CALC_STATE.readout);
 
@@ -169,12 +170,17 @@ function processButtonPress(aButtonData) {
 			// CALC_STATE.operator = myButtonData.op;
 			// CALC_STATE.state = 'opsetwait';
 
-			// push the value onto the operand stack
-			var v = roundNumber(CALC_STATE.readout);
-			CALC_STATE.operands[1] = v;
-			CALC_STATE.operands[0] = 0;
+			// just set
 			CALC_STATE.operator = myButtonData.op;
-			CALC_STATE.state = 'opsetwait';
+			updateDisplay();
+			return;
+
+			// // push the value onto the operand stack
+			// var v = roundNumber(CALC_STATE.readout);
+			// CALC_STATE.operands[1] = v;
+			// CALC_STATE.operands[0] = 0;
+			// CALC_STATE.operator = myButtonData.op;
+			// CALC_STATE.state = 'opsetwait';
 
 		}
 
@@ -353,27 +359,28 @@ $(function() {
 	// $('#main').hide().fadeIn();
 
 
-	var ws = new WebSocket('ws://'+window.location.host+'/main');
-	ws.onmessage = function(e) {
-		console.log(e.data);
-	};
-	// When the connection is open, send some data to the server
-	ws.onopen = function () {
-		ws.send(JSON.stringify({'action':'setDisplay','value':'0'}));
-	};
+	// var ws = new WebSocket('ws://'+window.location.host+'/main');
+	// ws.onmessage = function(e) {
+	// 	console.log(e.data);
+	// };
+	// // When the connection is open, send some data to the server
+	// ws.onopen = function () {
+	// 	ws.send(JSON.stringify({'action':'setDisplay','value':'0'}));
+	// };
 
-	// Log errors
-	ws.onerror = function (error) {
-	  console.log('WebSocket Error ' + error);
-	};
+	// // Log errors
+	// ws.onerror = function (errors) {
+	//   console.log('WebSocket Error ' + error);
+	// };
 
-	// Log messages from the server
-	ws.onmessage = function (e) {
-	  console.log('Ack back from server: ' + e.data);
-	};
+	// // Log messages from the server
+	// ws.onmessage = function (e) {
+	//   console.log('Ack back from server: ' + e.data);
+	// };
 
 	$(document).keydown(function(e) {
-		// console.log("Key down: " + e.keyCode);
+		console.log("Key down: " + e.keyCode);
+		if (e.metaKey || e.altKey || e.ctrlKey) return; // don't mess with other hot keys
 		for (var i in KEY_DATA) {
 			for (var j in KEY_DATA[i].keys) {
 				var myKeyData = KEY_DATA[i].keys[j];
