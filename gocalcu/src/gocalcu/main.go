@@ -3,10 +3,10 @@ package main
 
 import "net/http"
 // import "io"
-import "math/rand"
-import "time"
+// import "math/rand"
+// import "time"
 import "fmt"
-import "strings"
+// import "strings"
 import "strconv"
 // import "bytes"
 import "bufio"
@@ -14,7 +14,10 @@ import "code.google.com/p/go.net/websocket"
 import "github.com/jessevdk/go-flags"
 // import "github.com/tarm/goserial"
 // import "encoding/hex"
-import "encoding/json"
+// import "encoding/json"
+// import "container/list"
+import "sync"
+// import "container/list"
 
 
 var opts struct {
@@ -35,6 +38,13 @@ var opts struct {
 
 func main() {
 
+	// synchronize access to relayChannels
+	var channelLock sync.Mutex
+	// a channel for each websocket connection
+	// relayChannels := list.New()
+
+	relayChans := make([]chan string, 0)
+	// fmt.Println("test", relayChans)
 
 
 	/////////////////////////////////
@@ -66,7 +76,7 @@ func main() {
 	}
 
 	// a channel for the events we read from the serial port
-	event_channel := make(chan string)
+	// event_channel := make(chan string)
 
 
 	// run IO separately
@@ -90,22 +100,50 @@ func main() {
 			if len(opts.Verbose) > 0 {
 				fmt.Printf("got line: %s\n", line)
 			}
-			line = "\"" + strings.TrimSpace(line) + "\""
-			var v interface{}
-			err2 := json.Unmarshal([]byte(line), &v)
-			if err2 == nil {
-				switch v.(type) {
-					case string: {
-						vs := v.(string)
-						if len(opts.Verbose) > 0 {
-							fmt.Printf("string value: %s\n", vs)
-						}
-						// push to channel
-						event_channel <- vs
-						break
-					}
-				}
+
+			// event_channel <- line
+
+			// // copy the list before we do anything - do this each time newly
+			// // in case the list of channels has changed
+			// tmpList := list.New()
+			// channelLock.Lock()
+			// for el := relayChannels.Front(); el != nil; el = el.Next() {
+			// 	tmpList.PushFront(el)
+			// }
+			// channelLock.Unlock()
+
+			// // now that we have our own copy, iterate over it and push events,
+			// // assuming the buffers don't overflow, this should be asynchronous
+			// for el := tmpList.Front(); el != nil; el = el.Next() {
+			// 	el <- line
+			// }
+
+			channelLock.Lock()
+			for i := 0; i < len(relayChans); i++ {
+				relayChans[i] <- line
 			}
+			channelLock.Unlock()
+
+
+
+
+
+			// line = "\"" + strings.TrimSpace(line) + "\""
+			// var v interface{}
+			// err2 := json.Unmarshal([]byte(line), &v)
+			// if err2 == nil {
+			// 	switch v.(type) {
+			// 		case string: {
+			// 			vs := v.(string)
+			// 			if len(opts.Verbose) > 0 {
+			// 				fmt.Printf("string value: %s\n", vs)
+			// 			}
+			// 			// push to channel
+			// 			event_channel <- vs
+			// 			break
+			// 		}
+			// 	}
+			// }
 		}
 
 
@@ -118,39 +156,114 @@ func main() {
 		fmt.Printf("Starting Web Server...\n")
 	}
 
-	curRelay := int32(0)
+
+
+	// for e := l.Front(); e != nil; e = e.Next() {
+	// 	// do something with e.Value
+	// }
+
+	// curRelay := int32(0)
+
 
 	http.Handle("/", http.FileServer(http.Dir("../")))
 	http.Handle("/serial-relay", websocket.Handler(func (ws *websocket.Conn) {
 
-		thisRelay := rand.Int31n(999999999)+1 // make sure we don't get a zero
-		curRelay = thisRelay
+		// each handler gets it's own buffered channel
+		myChannel := make(chan string, 1024)
+		channelLock.Lock()
 
-		// our own timeout channel that times out after one second
-		timeout := make(chan bool, 1)
-		go func() {
-		    time.Sleep(1 * time.Second)
-		    timeout <- true
-		}()
+		relayChans = append(relayChans, myChannel)
+
+		// relayChannels.PushFront(myChannel)
+		channelLock.Unlock()
 
 
-		var outstr string
-		for thisRelay == curRelay {
+		// thisRelay := rand.Int31n(999999999)+1 // make sure we don't get a zero
+		// curRelay = thisRelay
+
+		// if len(opts.Verbose) > 0 {
+		// 	fmt.Printf("Serial relay start with ID %d\n", thisRelay)
+		// }
+
+
+
+		keep_going := true
+		outstr := ""
+
+		for keep_going {
 			select {
 				// read next event
-				case outstr = <- event_channel:
+				case outstr = <- myChannel:
+					if len(opts.Verbose) > 0 {
+						fmt.Printf("Sending data to websocket: %s\n", outstr)
+					}
 					// write it out to websocket
 					_, err := ws.Write([]byte(outstr))
 					if err != nil {
-						// break out of for loop
-						thisRelay = 0
+						fmt.Printf("Error while writing: %s\n", err)
+						keep_going = false
 					}
-					break
-				case <- timeout:
-					break
 			}
 		}
+
+		// // our own timeout channel that times out after one second
+		// timeout := make(chan bool, 1)
+		// go func() {
+		//     time.Sleep(1 * time.Second)
+		//     timeout <- true
+		// }()
+
+
+		// var outstr string
+		// for thisRelay == curRelay {
+		// 	select {
+		// 		// read next event
+		// 		case outstr = <- event_channel:
+		// 			if len(opts.Verbose) > 0 {
+		// 				fmt.Printf("Sending data to websocket: %s\n", outstr)
+		// 			}
+		// 			// write it out to websocket
+		// 			_, err := ws.Write([]byte(outstr))
+		// 			if err != nil {
+		// 				// break out of for loop
+		// 				thisRelay = 0
+		// 			}
+		// 			break
+		// 		case <- timeout:
+		// 			break
+		// 	}
+		// }
+
+		// if len(opts.Verbose) > 0 {
+		// 	fmt.Printf("Serial relay changed to %d, this handler (ID:%d) is exiting...\n", curRelay, thisRelay)
+		// }
+
+		channelLock.Lock()
+		// relayChannels.Remove(myChannel)
+		channelLock.Unlock()
+
+
 	}))
+
+	// // in separate routine we poll for 
+	// go func() {
+
+	// 	for true {
+	// 		outstr := <- event_channel:
+	// 		if len(opts.Verbose) > 0 {
+	// 			fmt.Printf("Sending data to websocket: %s\n", outstr)
+	// 		}
+	// 		// write it out to websocket
+	// 		_, err := ws.Write([]byte(outstr))
+	// 		if err != nil {
+	// 			// break out of for loop
+	// 			//thisRelay = 0
+	// 		}
+	// 		break
+	// 	}
+	// }
+
+
 
 	if len(opts.Verbose) > 0 {
 		fmt.Printf("Running\n")
