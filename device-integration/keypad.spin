@@ -1,0 +1,319 @@
+con
+
+  _clkmode = xtal1 + pll4x                                      ' run @ 20MHz in XTAL mode
+  _xinfreq = 5_000_000                                          ' use 5MHz crystal
+
+  CLK_FREQ = ((_clkmode - xtal1) >> 6) * _xinfreq
+  MS_001   = CLK_FREQ / 1_000
+  US_001   = CLK_FREQ / 1_000_000
+
+
+  KEY_COUNT = 2                       ' this MUST match the size of KEY_VALUE_MAP and KEY_VALUE_MAP below
+  KEY_DRIVE_PIN_COUNT = 5             ' this MUST match the size of KEY_DRIVE_PIN_NUMS below
+  KEY_SENSE_PIN_COUNT = 4             ' this MUST match the size of KEY_DRIVE_PIN_NUMS below
+
+obj
+  DBG : "PC_Interface"
+  STR : "ASCII0_STREngine_1"
+  TIM : "Timing"
+
+dat
+
+
+'KEY_DRIVE_MASKS                       ' each pin to "drive" one test
+''    long %0000000001000000
+''    long %0000000000100000
+''    long %0000000000010000
+''    long %0000000000001000
+''    long %0000000000000001
+''    long 0                            ' signal end of drive tests
+
+KEY_DRIVE_PIN_NUMS                    ' pins numbers to drive from
+    byte 0
+    byte 3
+    byte 4
+    byte 5
+    byte 6
+
+'KEY_DRIVE_COMPOSITE_MASK              ' all key drive masks ORed together, calculated in _init for convenience
+''    long 0
+
+KEY_SENSE_PIN_NUMS                    ' pin numbers to sense from
+    byte 1
+    byte 2
+    byte 7
+    byte 8
+
+
+'KEY_SENSE_MASK long %0000000110000110           ' sense with these pins
+
+' mapping of which combinations mean which key code
+KEY_MATCH_MAP
+        long  %0000000100000001
+        long  %0000000010000001
+
+KEY_VALUE_MAP
+        byte  "1"
+        byte  "2"
+        byte 0
+
+var
+
+  long  key_buckets[KEY_COUNT]          ' key "bucket" data - an arbitrary counter that
+                          ' "fills up" as a key is pressed, and drains when released,
+                          ' threshold is used to
+
+  long run_io_stack[16]
+
+
+pub demo
+  demoKeyCoder
+  return
+
+' demo which helps figure out which keys are where
+pub demoKeyCoder
+
+  DBG.start(31,30)
+  DBG.str(string("demoKeyCoder", 13, 10))
+
+  _init
+
+  return
+
+' demo which scans keys, just like the calling module would do
+pub demoKeyScanner
+  return
+
+' start keypad, uses one cog
+pub start
+
+  _init
+
+  'cognew(run_io, @run_io_stack)
+
+  return
+
+' stop keypad, frees a cog
+pub stop
+  return
+
+pub _init | i
+
+  ' calculate KEY_DRIVE_COMPOSITE_MASK
+  i := 0
+  KEY_DRIVE_COMPOSITE_MASK := 0
+  repeat while long[@KEY_DRIVE_MASKS][i]
+    KEY_DRIVE_COMPOSITE_MASK |= long[@KEY_DRIVE_MASKS][i]
+    DBG.str(string("test: "))
+    DBG.str(STR.integerToBinary(1 << i, 16))
+    DBG.str(string(13, 10))
+    i += 1
+
+  'DBG.str(string("KEY_DRIVE_COMPOSITE_MASK: "))
+  'DBG.str(STR.integerToBinary(KEY_DRIVE_COMPOSITE_MASK, 32))
+  'DBG.str(string(13, 10))
+
+  ' set all buckets to zero
+  i := 0
+  repeat KEY_COUNT
+    key_buckets[i] := 0
+
+
+' perform one pass of the key scanning and return the index of the key we found,
+' does not modify the bucket state, it's just "what's pressed right this moment"
+pub scanKeys | i, mask
+
+  ' set drive pins to output mode if not already
+  dira[KEY_DRIVE_COMPOSITE_MASK] := 1
+  ' turn all drive pins off
+  outa[KEY_DRIVE_COMPOSITE_MASK] := 0
+
+  i := 0
+  repeat while long[@KEY_DRIVE_MASKS][i]
+    mask := long[@KEY_DRIVE_MASKS][i]
+
+    i += 1
+
+
+  return
+
+pub main | pin_state, cycle_count, i, tmp
+
+  io_setup
+
+  DBG.str(string("TESTING", 13))
+
+  'CE.init
+
+  return
+
+  DBG.str(string(13, 13, 13))
+
+  DBG.str(string(34, "INITIALIZING", 34, 13))
+
+  'DBG.str(string(13, "TEST", 13))
+  'DBG.str(ltoa16(word[@KEY_MASKS][0], 4))
+  'DBG.str(string(13, "TEST", 13))
+
+  bucket_reset
+
+  'DBG.str(string(34, "LED LIGHT SHOW", 34, 13))
+  'light_show
+
+  DBG.str(string(34, "STARTING IO COG", 34, 13))
+
+  cognew(run_io, @run_io_stack)
+
+  pause(1000)
+
+  DBG.str(string(34, "ACTIVATED", 34, 13))
+
+  'pin_state := (ina[0..8] << 7) & %1111111110000000
+  'pin_state := (ina[0..8] << 7) & %1111111110000000
+  'DBG.str(ltoa16(pin_state, 4))
+
+
+  'test_buf[0] := 0
+  'test_buf[1] := 0
+  'test_buf[2] := 0
+
+  cycle_count := 500
+
+
+  DBG.str(string(13, "Sampling...", 13))
+
+  pause(1000)
+
+  ' for debugging - dump out the raw key data
+  'run_and_output_sample
+  'return
+
+  i := 0
+
+  'repeat cycle_count
+  '  ' do bucket sampling
+  '  bucket_io_update
+
+  DBG.str(string(13, "Done Sampling.", 13))
+
+  i := 0
+  repeat KEY_COUNT
+    DBG.str(string("KEY "))
+    'DBG.str(ltoa(i))
+    DBG.str(string(" BUCKET VALUE: "))
+    'DBG.str(ltoa(key_buckets[i]))
+    DBG.str(string(13))
+    i++
+
+'  return
+'
+'  test_buf[0] := 0
+'  test_buf[1] := 0
+'  i := 0
+'  repeat cycle_count
+'    tmp := 0
+'    if data_buf[i++] & KEY_MASKS[KEY_1] == KEY_MASKS[KEY_1]
+'      tmp := 1
+'    DBG.str(ltoa16(tmp, 2))
+'    DBG.str(string(" "))
+'    if i // 64 == 0
+'      test_buf[0] := 13
+'      DBG.str(@test_buf)
+
+pub run_io                                              ' runs in a separate cog to do the pin monitoring
+
+  repeat
+    bucket_io_update
+
+pub bucket_io_update | pin_state, i, key_mask           ' do one cycle of reading the pins and updating the buckets
+
+  ' read pins
+  pin_state := (ina[0..8] << 7) & %1111111110000000
+
+  ' for each key, check if it's pattern matches the current pin state
+  i := 0
+  repeat KEY_COUNT
+
+  ''  key_mask := KEY_MASKS.word[i]
+  ''  if pin_state & key_mask == key_mask                 ' is this key pressed
+  ''    key_buckets[i] += BUCKET_ON_VAL                   ' yes, add to bucket
+  ''  else
+  ''    key_buckets[i] += BUCKET_OFF_VAL                  ' nope, subtract from bucket'
+
+  ''  ' bounds check, make sure the bucket doesn't get too full or too empty
+  ''  if key_buckets[i] > BUCKET_MAX
+  ''    key_buckets[i] := BUCKET_MAX
+  ''  if key_buckets[i] < BUCKET_MIN
+  ''    key_buckets[i] := BUCKET_MIN
+
+    i++
+
+pub bucket_reset | i                                    ' set buckets to initial state
+
+  i := 0
+  repeat KEY_COUNT
+    'key_buckets[i++] := BUCKET_MIN
+
+pub run_and_output_sample | pin_state, i
+  ' sample the pins and output what we saw (for debugging)
+
+  i := 0
+
+'  repeat SAMPLE_WORD_SIZE
+'    ' read pins
+'    pin_state := (ina[0..8] << 7) & %1111111110000000
+'    'pin_state := (ina[0..8] << 7) ' & %1111111110000000
+'    'pin_state := ina[0..8]
+'    sample_buffer[i++] := pin_state
+'    'pause(1)
+
+'  i := 0
+'  repeat SAMPLE_WORD_SIZE
+'    DBG.str(ltoa16(sample_buffer[i++], 4))
+'    DBG.str(string(13))
+
+pub io_setup                                          ' set up our basic I/O
+
+'  leds.start(8, 16)                                         ' start led drivers
+
+  pause(5)
+
+'  leds.digital(0, %11111111)
+
+  DBG.start(31,30)                                     ' fire up the terminal
+
+  pause(5)
+
+  ' clear all output
+  outa[0..9] := 0
+
+  ' set pin directions
+  dira[0..8] := 0
+
+
+'pub light_show
+'
+'  ' start up LED display - give the user some time to prepare...
+'  repeat 128
+'    leds.inc_all
+'    pause(20)
+'    'waitcnt(1)
+
+'  repeat 128
+'    leds.dec_all
+'    pause(20)
+
+pub pause(ms) | t
+
+'' Delay program in milliseconds
+'' -- use only in full-speed mode 
+
+  if (ms < 1)                                                                   ' delay must be > 0
+    return
+  else
+    t := cnt - 1792                                                             ' sync with system counter
+    repeat ms                                                                   ' run delay
+      waitcnt(t += MS_001)
+
+
+
