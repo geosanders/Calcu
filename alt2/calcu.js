@@ -1,8 +1,12 @@
 
 
 var ws;
+var wsRetryHandle = 0;
+var keyAnimHandle = 0;
 
 function setupWebsocket() {
+
+	wsRetryHandle = 0;
 
 	if (typeof MozWebSocket != 'undefined') {
 		ws = new MozWebSocket('ws://'+window.location.host+'/serial-relay');
@@ -18,12 +22,19 @@ function setupWebsocket() {
 	// Log errors
 	ws.onerror = function (error) {
 	  console.log('WebSocket Error ' + error + ' (will retry shortly)');
-	  setTimeout(function() {
+	  if (wsRetryHandle) clearTimeout(wsRetryHandle);
+	  wsRetryHandle = setTimeout(function() {
 	  	setupWebsocket();
 	  }, 3000);
 	};
 
-	ws.onclose = function() { console.log("Socket closed, not reconnecting since it was an intentional close"); }
+	ws.onclose = function() {
+		console.log("Socket closed by server, will try again in 15 seconds...");
+		if (wsRetryHandle) clearTimeout(wsRetryHandle);
+	  	wsRetryHandle = setTimeout(function() {
+			setupWebsocket();
+		}, 15000);
+	}
 
 	// Log messages from the server
 	ws.onmessage = function (e) {
@@ -31,6 +42,37 @@ function setupWebsocket() {
 		var d = JSON.parse(e.data);
 		console.log("Got JSON data: ")
 		console.log(d)
+
+		// make sure we have a command
+		if (d && d.c) {
+
+			if (d.c == 'ready') {
+
+				$('#readout_op').html('<div class="inner">'+''+'</div>');
+				$('#readout').html('<div class="inner lcd">'+'...'+'</div>');
+
+			}
+
+			else if (d && d.c == 'lcdtxt') {
+
+				$('#readout_op').html('<div class="inner">'+(d.d.length > 0 ? d.d.charAt(0) : '')+'</div>');
+				$('#readout').html('<div class="inner lcd">'+(d.d.length > 0 ? d.d.substring(1) : d.d)+'</div>');
+
+			}
+
+			else if (d && d.c == 'key') {
+
+				$('#key_'+d.d).addClass('down');
+
+				if (keyAnimHandle) { clearTimeout(keyAnimHandle); }
+				$('#key_'+d.d).addClass('down');
+				keyAnimHandle = setTimeout(function() {
+					$('.key').removeClass('down');
+				}, 500)
+
+			}
+
+		}
 
 		// var myData = (e.data+'').toLowerCase();
 		// var myKeyName = getKeyNameFromSerialCode(myData);

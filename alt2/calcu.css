@@ -304,3 +304,8 @@ body {
 #main .key {
 	background-position: bottom;
 }
+
+/*#main .lcd {
+	font-family: monospace;
+	white-space: pre;
+}*/
