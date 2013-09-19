@@ -1,5 +1,18 @@
 Notes
 
+
+
+Propeller Pins:
+
+0-8 - Keypad
+9-11 - LCD control
+24-27 - LCD data
+
+
+
+
+OLD:
+
 Wiring on Calculator:
 
 A - BlW
