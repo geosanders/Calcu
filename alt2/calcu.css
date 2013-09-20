@@ -81,16 +81,16 @@ body {
 }
 
 #main #readout_op .inner {
-	padding-top: 20px;
-	padding-left: 25px;
-	color: #fff;
-	font-size: 90px;
+	padding-top: 25px;
+	padding-left: 50px;
+	color: #999;
+	font-size: 127px;
 }
 
 #main #readout .inner {
 	text-align: right;
 	color: #fff;
-	font-size: 85px;
+	font-size: 125px;
 	padding-top: 26px;
 	padding-right: 45px;
 }
