@@ -6,6 +6,10 @@ function opToDisplay(o) {
 	return o;
 }
 
+function numberWithCommas(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
 var ws;
 var wsRetryHandle = 0;
 var keyAnimHandle = 0;
@@ -62,7 +66,7 @@ function setupWebsocket() {
 			else if (d && d.c == 'lcdtxt') {
 
 				$('#readout_op').html('<div class="inner">'+(d.d.length > 0 ? opToDisplay(d.d.charAt(0)) : '')+'</div>');
-				$('#readout').html('<div class="inner lcd">'+(d.d.length > 0 ? d.d.substring(1) : d.d)+'</div>');
+				$('#readout').html('<div class="inner lcd">'+(d.d.length > 0 ? numberWithCommas(d.d.substring(1)) : d.d)+'</div>');
 
 			}
 
@@ -477,7 +481,7 @@ function addTapeRow(aValue, aType) {
 
 	myRow.addClass(myType);
 
-	var v = aValue ? numberToString(aValue) : aValue;
+	var v = numberWithCommas(aValue ? numberToString(aValue) : aValue);
 
 	if (myType == 'regular') {
 		v += '&nbsp;&nbsp;&nbsp;';
