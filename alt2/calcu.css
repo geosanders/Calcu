@@ -34,6 +34,9 @@ body {
 	padding-left: 10px;
 	margin-left: 12px;
 }
+#main #tape_detail .row.regular {
+	margin-top: 15px;
+}
 #main #tape_detail .row.plus {
 	color: #007e00;
 }
