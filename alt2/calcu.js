@@ -68,14 +68,43 @@ function setupWebsocket() {
 
 			else if (d && d.c == 'key') {
 
-				$('#key_'+d.d).addClass('down');
+				var myKeyName = d.d
+				if (myKeyName == '=') {
+					myKeyName = 'equals';
+				}
+				if (myKeyName == 'Z') {
+					myKeyName = '00';
+				}
+				if (myKeyName == '-') {
+					myKeyName = 'minus';
+				}
+				if (myKeyName == 'X') {
+					myKeyName = 'times';
+				}
+				if (myKeyName == '.') {
+					myKeyName = 'period';
+				}
+				if (myKeyName == '+') {
+					myKeyName = 'plus';
+				}
+				if (myKeyName == 'C') {
+					myKeyName = 'clear';
+				}
+				if (myKeyName == 'B') {
+					myKeyName = 'backspace';
+				}
+				if (myKeyName == '/') {
+					myKeyName = 'divide';
+				}
 
-				return
+
+				$('#key_'+myKeyName).addClass('down');
+
 				if (keyAnimHandle) { clearTimeout(keyAnimHandle); }
-				$('#key_'+d.d).addClass('down');
+				$('#key_'+myKeyName).addClass('down');
 				keyAnimHandle = setTimeout(function() {
 					$('.key').removeClass('down');
-				}, 500)
+				}, 100)
 
 			}
 
