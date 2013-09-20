@@ -11,22 +11,32 @@ MS_001con
 obj
   term : "PC_Interface"
   num : "Numbers"
-  leds : "jm_pwm8"
+  'leds : "jm_pwm8"
 
 pub main | r, testpin
 
   term.start(31,30)                                     ' fire up the terminal
 
-  leds.start(8, 16)                                         ' start drivers
+  'leds.start(8, 16)                                         ' start drivers
 
   pause(5)
 
-  leds.digital(0, %11111111)
+  'leds.digital(0, %11111111)
 
   num.Init
 
   term.str(string("TESTING", 13))
 
+
+  dira[7] := 1
+  dira[8] := 0
+
+  outa[7] := 1
+
+  repeat
+    term.hex(ina[8],1)
+    term.str(string(13,10))
+    pause(500)
 
 
   'dira[0..11] := 1
