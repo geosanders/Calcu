@@ -35,7 +35,7 @@ body {
 	margin-left: 12px;
 }
 #main #tape_detail .row.regular {
-	padding-top: 15px;
+	padding-top: 10px;
 }
 #main #tape_detail .row.plus {
 	color: #007e00;
@@ -57,6 +57,7 @@ body {
 	color: #092f5b;
 	background: #ffffff;
 	-webkit-transition: background-color 300ms linear;
+	padding-bottom: 10px;
 }
 
 #main #tape_detail .row.total:last-child { 
