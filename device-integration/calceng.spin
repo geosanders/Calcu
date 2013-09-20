@@ -53,10 +53,14 @@ var
   byte mblnNewEquals        ' bool - oddly enough, this means we have an op and are expecting an equals button press
   byte mblnEqualsPressed    ' bool - true immediately after the equals button was pressed
   long mintCurrKeyIndex     ' int - unused
+  byte cKeyRepeatCount
 
   byte lblDisplay[32]       ' string
 
-  byte tapeLine[32]         ' next line to add to tape roll
+  byte tmpDisplay[32]       ' string - temp display text, not part of overall state, only use for string mangling
+
+  byte tapeLine[256]        ' json output of what should happen to tape
+  byte lastTapeLine[256]    ' the prior one we just returned
 
   byte DEBUG_DATA[32]
 
@@ -177,6 +181,11 @@ pub demo | tmp
   DBG.str(@mstrDisplay)
   DBG.str(string(13,10))
 
+  ' clear three times in a row
+  processKey("C")
+  processKey("C")
+  processKey("C")
+
 pub init | ok
 
 
@@ -193,6 +202,8 @@ pub init | ok
 
   ' press the clear key
   processKey("C")
+
+  cKeyRepeatCount := 0
 
 pub isOpPending : r
   r := mblnOpPending
@@ -220,11 +231,13 @@ pub runOp(op, v1, v2) : r ' execute an operation and return the result (all numb
         r := F.FDiv(v1, v2)
 
 
-pub processKey(keycode) : retDisplayPtr | len, tmpstr, foundop, maxfull
+pub processKey(keycode) : retDisplayPtr | len, tmpstr, foundop, maxfull, tmpshow
 
   maxfull := F.Fcmp(MAX_MIN_VALUE, F.Fabs(FStr.StringToFloat(@mstrDisplay))) < 0
 
-  if keycode => "0" and keycode =< "9" and strsize(@mstrDisplay) < MAX_KEY_ENTRY
+  if ((keycode => "0" and keycode =< "9") or keycode == "Z" or keycode == "B") and strsize(@mstrDisplay) < MAX_KEY_ENTRY
+
+    cKeyRepeatCount := 0
 
     if mblnOpPending
       mstrDisplay[0] := 0
@@ -241,11 +254,29 @@ pub processKey(keycode) : retDisplayPtr | len, tmpstr, foundop, maxfull
       ' if display is just "0" then get rid of that first
       if len == 1 and mstrDisplay[0] == "0"
         len--
-      mstrDisplay[len] := keycode
-      mstrDisplay[len+1] := 0
+
+      ' special case for double zero
+      if keycode == "Z"
+        mstrDisplay[len] := "0"
+        mstrDisplay[len+1] := "0"
+        mstrDisplay[len+2] := 0
+      elseif keycode == "B" ' handled below
+        ' nothing
+      else
+        mstrDisplay[len] := keycode
+        mstrDisplay[len+1] := 0
+
+    ' implement backspace
+    if keycode == "B"
+      len := strsize(@mstrDisplay)
+      if len
+        mstrDisplay[len-1] := 0
 
 
   if keycode == "." and strsize(@mstrDisplay) < MAX_KEY_ENTRY and not maxfull
+
+    cKeyRepeatCount := 0
+
     if mblnOpPending
       mstrDisplay[0] := 0
       mblnOpPending := 0
@@ -259,8 +290,26 @@ pub processKey(keycode) : retDisplayPtr | len, tmpstr, foundop, maxfull
 
   if keycode == "+" or keycode == "-" or keycode == "X" or keycode == "/"
 
+    cKeyRepeatCount := 0
+
+    tmpDisplay[0] := 0
+
+    ' update tape line (before operator gets updated, we want to show the old one)
+    STR.stringCopy(@tapeLine, string("{'c':'tapectl','d':{'o':'"))
+    tmpstr := 0
+    if mblnNewEquals
+      tmpstr := mstrOp
+    STR.stringConcatenate(@tapeLine, @tmpstr)
+    STR.stringConcatenate(@tapeLine, string("','v':'"))
+    STR.stringConcatenate(@tapeLine, @mstrDisplay)
+    STR.stringConcatenate(@tapeLine, string("'}}"))
+
     ' if we got an operator but it's not pending right now (more digits entered into new number)
     if mblnNewEquals AND NOT mblnOpPending
+
+      ' in this case, show the original display value in the tape
+      'str.stringCopy(@tmpDisplay, @mstrDisplay)
+
       ' we need to calculate the result, just like equals, and keep rolling
       mdblSavedNumber := FStr.StringToFloat(@mstrDisplay)
       mdblResult := runOp(mstrOp, mdblResult, mdblSavedNumber)
@@ -269,12 +318,23 @@ pub processKey(keycode) : retDisplayPtr | len, tmpstr, foundop, maxfull
       'mdblSavedNumber := mdblResult
       'mdblResult := runOp(mstrOp, mdblResult, FStr.StringToFloat(@mstrDisplay))
 
+
     mdblResult := FStr.StringToFloat(@mstrDisplay)
     'mdblSavedNumber := FStr.StringToFloat(@mstrDisplay)
+
+
+    ' if not set yet then use whatever is in display now
+    'if not strsize(@tmpDisplay)
+    '  str.stringCopy(@tmpDisplay, @mstrDisplay)
+
+
+
     mstrOp := keycode
     mblnOpPending := 1
     mblnDecEntered := 0
     mblnNewEquals := 1
+
+
 
   'if keycode == "%"
   '  mdblSavedNumber = (Val(mstrDisplay) / 100) * mdblResult
@@ -282,10 +342,28 @@ pub processKey(keycode) : retDisplayPtr | len, tmpstr, foundop, maxfull
 
   if keycode == "="
 
+    cKeyRepeatCount := 0
+
+    ' clear out tape line
+    tapeLine[0] := 0
+
+    ' same deal as operator line, but we add as additional, returning two lines
+    STR.stringCopy(@tapeLine, string("{'c':'tapectl','d':{'o':'"))
+    tmpstr := 0
+    if mblnNewEquals
+      tmpstr := mstrOp
+    STR.stringConcatenate(@tapeLine, @tmpstr)
+    STR.stringConcatenate(@tapeLine, string("','v':'"))
+    STR.stringConcatenate(@tapeLine, @mstrDisplay)
+    STR.stringConcatenate(@tapeLine, string("'}}",13,10))
+
+
+
     if mblnNewEquals
       'DBG.str(string("mblnNewEquals=1"))
       mdblSavedNumber := FStr.StringToFloat(@mstrDisplay)
       mblnNewEquals := 0
+
     else
       mdblResult := FStr.StringToFloat(@mstrDisplay)
 
@@ -315,6 +393,15 @@ pub processKey(keycode) : retDisplayPtr | len, tmpstr, foundop, maxfull
     str.stringCopy(@mstrDisplay, tmpstr)
     mblnEqualsPressed := 1
 
+    STR.stringConcatenate(@tapeLine, string("{'c':'tapectl','d':{'o':'"))
+    tmpstr := "="
+    STR.stringConcatenate(@tapeLine, @tmpstr)
+    STR.stringConcatenate(@tapeLine, string("','v':'"))
+    STR.stringConcatenate(@tapeLine, @mstrDisplay)
+    STR.stringConcatenate(@tapeLine, string("'}}"))
+
+
+
   'Case "+/-"
   ''    if mstrDisplay <> "" Then
   ''        if Left$(mstrDisplay, 1) = "-" Then
@@ -338,6 +425,10 @@ pub processKey(keycode) : retDisplayPtr | len, tmpstr, foundop, maxfull
     mblnNewEquals := 0
     mstrOp := 0
     mblnDecEntered := 0
+    cKeyRepeatCount++
+
+    if cKeyRepeatCount > 2 ' third time triggers clear
+      STR.stringCopy(@tapeLine, string("{'c':'tapectl','d':'clear'}"))
 
 
   'Case "1/x"
@@ -409,5 +500,7 @@ pub popTapeLine : r             ' read the current tape line and delete it, retu
   if tapeLine[0] == 0
     r := 0
   else
-    r := @tapeLine
+    STR.stringCopy(@lastTapeLine, @tapeLine)
+    r := @lastTapeLine
+    tapeLine[0] := 0
 
