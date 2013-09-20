@@ -1,5 +1,11 @@
 
 
+function opToDisplay(o) {
+	if (o == '/') { return '&divide;'; }
+	if (o == '*') { return '&times;'; }
+	return o;
+}
+
 var ws;
 var wsRetryHandle = 0;
 var keyAnimHandle = 0;
@@ -55,7 +61,7 @@ function setupWebsocket() {
 
 			else if (d && d.c == 'lcdtxt') {
 
-				$('#readout_op').html('<div class="inner">'+(d.d.length > 0 ? d.d.charAt(0) : '')+'</div>');
+				$('#readout_op').html('<div class="inner">'+(d.d.length > 0 ? opToDisplay(d.d.charAt(0)) : '')+'</div>');
 				$('#readout').html('<div class="inner lcd">'+(d.d.length > 0 ? d.d.substring(1) : d.d)+'</div>');
 
 			}
@@ -64,12 +70,24 @@ function setupWebsocket() {
 
 				$('#key_'+d.d).addClass('down');
 
+				return
 				if (keyAnimHandle) { clearTimeout(keyAnimHandle); }
 				$('#key_'+d.d).addClass('down');
 				keyAnimHandle = setTimeout(function() {
 					$('.key').removeClass('down');
 				}, 500)
 
+			}
+
+			else if (d && d.c == 'tapectl' && d.d == 'clear') {
+				clearTape();
+			}
+
+			else if (d && d.c == 'tapectl' && d.d.v) {
+				if (d.d.o == '=') {
+					addTapeRow(null, 'separator');
+				}
+				addTapeRow(d.d.v, d.d.o)
 			}
 
 		}
@@ -407,7 +425,7 @@ function addTapeRow(aValue, aType) {
 	console.log("addTapeRow");
 
 	var myType = aType;
-	if (myType == '*') {
+	if (myType == '*' || myType == 'X') {
 		myType = 'times';
 	}
 	else if (myType == '/') {
@@ -418,6 +436,12 @@ function addTapeRow(aValue, aType) {
 	}
 	else if (myType == '-') {
 		myType = 'minus';
+	}
+	else if (myType == '=') {
+		myType = 'total';
+	}
+	if (!myType) {
+		myType = 'regular';
 	}
 
 	var myRow = $('<div class="row"></div>');

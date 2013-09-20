@@ -53,7 +53,8 @@ func main() {
 	opts.Interface = ""
 	opts.BaseDir = "../"
 	opts.SerialDevice = ""
-	opts.SerialBaud = 9600
+	// opts.SerialBaud = 9600
+	opts.SerialBaud = 115200
 
 
 	parser := flags.NewParser(&opts, flags.Default)
