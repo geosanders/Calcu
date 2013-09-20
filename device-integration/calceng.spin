@@ -294,18 +294,19 @@ pub processKey(keycode) : retDisplayPtr | len, tmpstr, foundop, maxfull, tmpshow
 
     tmpDisplay[0] := 0
 
-    ' update tape line (before operator gets updated, we want to show the old one)
-    STR.stringCopy(@tapeLine, string("{'c':'tapectl','d':{'o':'"))
-    tmpstr := 0
-    if mblnNewEquals
-      tmpstr := mstrOp
-    STR.stringConcatenate(@tapeLine, @tmpstr)
-    STR.stringConcatenate(@tapeLine, string("','v':'"))
-    STR.stringConcatenate(@tapeLine, @mstrDisplay)
-    STR.stringConcatenate(@tapeLine, string("'}}"))
 
     ' if we got an operator but it's not pending right now (more digits entered into new number)
     if mblnNewEquals AND NOT mblnOpPending
+
+      ' update tape line (before operator gets updated, we want to show the old one)
+      STR.stringCopy(@tapeLine, string("{'c':'tapectl','d':{'o':'"))
+      tmpstr := 0
+      if mblnNewEquals
+        tmpstr := mstrOp
+      STR.stringConcatenate(@tapeLine, @tmpstr)
+      STR.stringConcatenate(@tapeLine, string("','v':'"))
+      STR.stringConcatenate(@tapeLine, @mstrDisplay)
+      STR.stringConcatenate(@tapeLine, string("'}}"))
 
       ' in this case, show the original display value in the tape
       'str.stringCopy(@tmpDisplay, @mstrDisplay)
@@ -317,6 +318,17 @@ pub processKey(keycode) : retDisplayPtr | len, tmpstr, foundop, maxfull, tmpshow
       str.stringCopy(@mstrDisplay, tmpstr)
       'mdblSavedNumber := mdblResult
       'mdblResult := runOp(mstrOp, mdblResult, FStr.StringToFloat(@mstrDisplay))
+
+    elseif NOT mblnNewEquals
+
+      STR.stringCopy(@tapeLine, string("{'c':'tapectl','d':{'o':'"))
+      tmpstr := 0
+      if mblnNewEquals
+        tmpstr := mstrOp
+      STR.stringConcatenate(@tapeLine, @tmpstr)
+      STR.stringConcatenate(@tapeLine, string("','v':'"))
+      STR.stringConcatenate(@tapeLine, @mstrDisplay)
+      STR.stringConcatenate(@tapeLine, string("'}}"))
 
 
     mdblResult := FStr.StringToFloat(@mstrDisplay)
