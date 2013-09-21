@@ -1,7 +1,7 @@
 /**
 
-* 2 decimal points to disappear
-* commans in large numbers
+* DONE - 2 decimal points to disappear
+* comma's in large numbers
 * spacing on totals/subtotals
 * implement CE/C, 3 times should clear the whole tape
 * operator into the box
@@ -25,8 +25,6 @@
 * 4	* +	* -	* x	* /	* =	* *
 
 
-
-2 + (3 * 5 =) 6 + ....
 
 */
 
@@ -129,7 +127,6 @@ function emulateKeyPress(aKeyName) {
 		myNext = CALC_STATE.emulateKeyPressQueue.shift();
 	}
 
-
 	// if any item to process
 	if (myNext) {
 		keyStateDown(myNext);
@@ -137,7 +134,6 @@ function emulateKeyPress(aKeyName) {
 			keyStateUp(myNext);
 		}, 200);
 	}
-
 
 }
 
@@ -186,6 +182,14 @@ function processButtonPress(aButtonData) {
 	    case 'key_9':
 		case 'key_period':
 
+			// ignore the keypress if the display number is already 12 digits
+			if (CALC_STATE.display.replace(/\./, '').length >= 12) {
+				break;
+			}
+
+			// ignore any duplicate periods
+			if (myButtonData.name === 'key_period' && CALC_STATE.display.indexOf('.') > -1) break;
+
 	    	if  (
 	    			CALC_STATE.lastkey == 'key_plus' ||
 	    			CALC_STATE.lastkey == 'key_minus' || 
@@ -207,8 +211,13 @@ function processButtonPress(aButtonData) {
 	    	if (CALC_STATE.display == '0') {
 	    		CALC_STATE.display = '';
 	    	}
+
 	    	CALC_STATE.display += myButtonData.item;
 	    	CALC_STATE.curval = parseFloat(CALC_STATE.display);
+
+	    	// minor display tweak
+	    	if (CALC_STATE.display === '.') CALC_STATE.display = '0.';
+
 	    	updateDisplay();
 
 	    	break;
@@ -333,7 +342,7 @@ function processButtonPress(aButtonData) {
 		case 'key_total':
 			
 			CALC_STATE.display = numberToString(CALC_STATE.total);
-			addTapeRow(CALC_STATE.total, 'total');
+			addTapeRow(CALC_STATE.total, 'total', false);
 
 			// CALC_STATE.curval = CALC_STATE.total;
 			// CALC_STATE.total = 0;
@@ -341,7 +350,7 @@ function processButtonPress(aButtonData) {
 			CALC_STATE.lastop = '=';
 			break;
 
-		case 'key_clear': { // FIXME: is this "CE" or "C" ? (CE clears one entry whereas C clears everything)
+		case 'key_clear': // FIXME: is this "CE" or "C" ? (CE clears one entry whereas C clears everything)
 			// FIXME: this isn't exactly right, probably should not clear total, or something
 			CALC_STATE.display = '0';
 			CALC_STATE.curval = 0;
@@ -358,8 +367,7 @@ function processButtonPress(aButtonData) {
 	    	updateDisplay();
 
 	    	return;
-		} break;
-
+		
 	}
 
 	CALC_STATE.lastkey = myButtonData.name;
@@ -536,10 +544,9 @@ function _processCalcEquals() {
 	CALC_STATE.operands = [v];
 	CALC_STATE.operator = null;
 	CALC_STATE.state = 'postcalc';
+	
 	CALC_STATE.readout = numberToString(v);
-
 	addTapeRow(null, 'separator');
-
 	addTapeRow(v, 'total');
 
 }
@@ -565,12 +572,33 @@ function updateDisplay() {
 
 	if (mySymbol == null) { mySymbol = ''; }
 
+	console.log('----');
+	console.log(mySymbol);
+
 	$('#readout_op').html('<div class="inner">'+mySymbol+'</div>');
 
 	////////////////////////////////////////////
 	// update the readout
+
 	var myReadoutHtml = CALC_STATE.display;
 	$('#readout').html('<div class="inner">'+myReadoutHtml+'</div>');
+
+	// handle the commas
+	$('.readout-comma').hide();
+	if (parseInt(CALC_STATE.display) > 999) $('.readout-comma-3').show();
+	if (parseInt(CALC_STATE.display) > 999999) $('.readout-comma-2').show();
+	if (parseInt(CALC_STATE.display) > 999999999) $('.readout-comma-1').show();
+
+	var commaBasicPositions = [30, 354, 528];
+
+	// push the commas to the right based on the decimal dot ('.') and any decimals
+	var commasDelta = 0;
+	if (myReadoutHtml.indexOf('.') > -1) {
+		commasDelta += 30;
+		var numDecimals = myReadoutHtml.length - myReadoutHtml.indexOf('.') - 1;
+		commasDelta += numDecimals * 57;
+	}
+	for (var myPosIdx in commaBasicPositions) $('.readout-comma-' + (parseInt(myPosIdx)+1) ).css('left', commaBasicPositions[myPosIdx] - commasDelta + 'px');
 
 }
 
@@ -648,7 +676,7 @@ function numberToString(v, abbreviate) {
 /**
  * Add a row to the tape thing
  */
-function addTapeRow(aValue, aType) {
+function addTapeRow(aValue, aType, dontRipLastTwoDigits) {
 	
 	// console.log("addTapeRow");
 
@@ -673,7 +701,7 @@ function addTapeRow(aValue, aType) {
 
 	myRow.addClass(myType);
 
-	var v = aValue ? numberToString(aValue, true) : aValue;
+	var v = aValue ? numberToString(aValue, (typeof dontRipLastTwoDigits === 'undefined' ? true : dontRipLastTwoDigits)) : aValue;
 	// console.log(v);
 	// console.log(typeof v);
 

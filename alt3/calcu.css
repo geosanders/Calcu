@@ -94,9 +94,14 @@ body {
 #main #readout .inner {
 	text-align: right;
 	color: #fff;
+	/*
+	padding-right: 45px;
 	font-size: 125px;
 	padding-top: 26px;
-	padding-right: 45px;
+	*/
+	padding-right: 50px;
+	font-size: 105px;
+	padding-top: 36px;
 }
 
 #main .calc_01 {
@@ -287,3 +292,18 @@ body {
 	font-family: monospace;
 	white-space: pre;
 }*/
+
+#main .readout-comma-wrapper {
+	position: relative;
+}
+
+#main .readout-comma {
+	width: 13px;
+	height: 21px;
+	background: url('images/calcu_img_comma.png') 0px 0px no-repeat transparent;
+	position: absolute;
+	top: 45px;
+	display: none;
+}
+
+
