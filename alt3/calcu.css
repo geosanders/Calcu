@@ -293,17 +293,9 @@ body {
 	white-space: pre;
 }*/
 
-#main .readout-comma-wrapper {
-	position: relative;
-}
-
-#main .readout-comma {
-	width: 13px;
-	height: 21px;
-	background: url('images/calcu_img_comma.png') 0px 0px no-repeat transparent;
+.thousand-sep {
 	position: absolute;
-	top: 45px;
-	display: none;
+	width: 14px;
+	height: 28px;
+	background: url('images/calcu_img_comma.png') -4px 6px no-repeat transparent;
 }
-
-

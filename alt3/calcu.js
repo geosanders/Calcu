@@ -1,14 +1,12 @@
 /**
 
 * DONE - 2 decimal points to disappear
-* comma's in large numbers
+* DONE comma's in large numbers
+* DONE operator into the box
+* DONE fix CSS on long numbahs (match calculator)
 * spacing on totals/subtotals
 * implement CE/C, 3 times should clear the whole tape
-* operator into the box
-* fix CSS on long numbahs (match calculator)
 * add space in, match the C, black
-
-
 
 3 4	3 +	5 -	3 x	7 /	4 =	5 *                     338.00
  
@@ -23,8 +21,6 @@
 = 3	= +	= -	= x	= /	= =	= *
 
 * 4	* +	* -	* x	* /	* =	* *
-
-
 
 */
 
@@ -46,8 +42,6 @@ var CALC_STATE = {
 	justCleared: false, // flag to indicate if we just cleared
 	lastkey: null,
 	lastEqualOp: null,
-
-
 
 	// operands: [0], // the operand stack
 	// readout: '0', // the currently in the readout
@@ -557,23 +551,26 @@ function updateDisplay() {
 	/////////////////////////////////////////////
 	// update operator in display
 	var mySymbol = '';
-	if (CALC_STATE.operator == '/') {
+	if (CALC_STATE.lastkey == 'key_divide') {
 		mySymbol = '&divide;';
 	}
-	else if (CALC_STATE.operator == '*') {
+	else if (CALC_STATE.lastkey == 'key_times') {
 		mySymbol = '&times;';
 	}
-	else if (CALC_STATE.operator == '-') {
+	else if (CALC_STATE.lastkey == 'key_minus') {
 		mySymbol = '&minus;';
 	}
-	else {
-		mySymbol = CALC_STATE.operator;
+	else if (CALC_STATE.lastkey == 'key_plus') {
+		mySymbol = '&plus;';
+	}
+	else if (CALC_STATE.lastkey == 'key_equals') {
+		mySymbol = '=';
+	}
+	else if (CALC_STATE.lastkey == 'key_total') {
+		mySymbol = '*';
 	}
 
 	if (mySymbol == null) { mySymbol = ''; }
-
-	console.log('----');
-	console.log(mySymbol);
 
 	$('#readout_op').html('<div class="inner">'+mySymbol+'</div>');
 
@@ -581,24 +578,30 @@ function updateDisplay() {
 	// update the readout
 
 	var myReadoutHtml = CALC_STATE.display;
+
+	// put in thousand separators
+	var decimals = (myReadoutHtml.indexOf('.') > -1);
+	var currentDigit = 0;
+	var currentString = '';
+	for (var i = myReadoutHtml.length - 1; i >= 0; i--) {
+		var myChar = myReadoutHtml[i];
+		if (decimals && myChar != '.') {
+			currentString = myChar + currentString;
+			continue;
+		}
+		if (decimals && myChar == '.') {
+			decimals = false;
+			currentString = myChar + currentString;
+			continue;
+		}
+
+		currentString = myChar + currentString;
+		if (currentDigit % 3 == 2) currentString = '<span class="thousand-sep"></span>' + currentString;
+		currentDigit++;
+	};
+	myReadoutHtml = currentString.replace(/^<span[^<]*<\/span>/, ''); // <- rip any initial thousand separators
+
 	$('#readout').html('<div class="inner">'+myReadoutHtml+'</div>');
-
-	// handle the commas
-	$('.readout-comma').hide();
-	if (parseInt(CALC_STATE.display) > 999) $('.readout-comma-3').show();
-	if (parseInt(CALC_STATE.display) > 999999) $('.readout-comma-2').show();
-	if (parseInt(CALC_STATE.display) > 999999999) $('.readout-comma-1').show();
-
-	var commaBasicPositions = [30, 354, 528];
-
-	// push the commas to the right based on the decimal dot ('.') and any decimals
-	var commasDelta = 0;
-	if (myReadoutHtml.indexOf('.') > -1) {
-		commasDelta += 30;
-		var numDecimals = myReadoutHtml.length - myReadoutHtml.indexOf('.') - 1;
-		commasDelta += numDecimals * 57;
-	}
-	for (var myPosIdx in commaBasicPositions) $('.readout-comma-' + (parseInt(myPosIdx)+1) ).css('left', commaBasicPositions[myPosIdx] - commasDelta + 'px');
 
 }
 
@@ -656,6 +659,9 @@ function numberToString(v, abbreviate) {
 	if (abbreviate && res.length > 3 && res.substring(res.length - 3) == '.00') {
 		res = res.substring(0, res.length - 3);
 	}
+
+	// if it's over 12 characters with decimals (1-2 decimals over) - chop those off
+	if (res.indexOf('.' > -1)) res = res.substring(0, 13);
 
 	return res;
 
