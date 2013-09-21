@@ -29,11 +29,15 @@ body {
 }
 #main #tape_detail .row {
 	width: 620px;
-	margin-bottom: 40px;
 	padding-right: 10px;
 	padding-left: 10px;
 	margin-left: 12px;
 }
+
+#main #tape_detail .row.total {
+	margin-bottom: 40px;
+}
+
 #main #tape_detail .row.regular {
 	padding-top: 10px;
 }
