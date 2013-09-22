@@ -22,30 +22,6 @@
 
 * 4	* +	* -	* x	* /	* =	* *
 
-
-25 -> X register, shown on display
-+  -> flag register
-9  -> X register (shown on display), pushed "25" into Y register
-= (or other) -> check flag register, notice that it's addition, do it, "34" -> X register
-
-
-
-123 +  (TOTAL: 0,    X: 123, Y: 0,   FLAG: +)
-456 +  (TOTAL: 123,  X: 456, Y: 123, FLAG: +)
-333 -  (TOTAL: 579,  X: 333, Y: 456, FLAG: -)
-*      (TOTAL: 246,  X: -,   Y: 333, FLAG: *)
-
-
-123 +  (TOTAL: 0,    X: 123, Y: 0,   FLAG: +)
-456 +  (TOTAL: 123,  X: 456, Y: 123, FLAG: +)
-*      (TOTAL: 579,  X: -,   Y: 333, FLAG: *)
-
-x      (TOTAL: 579,  X: 579, Y: -,   FLAG: x)
-=      (TOTAL: 1158, X: -,   Y: 579, FLAT: =)
-
-
-
-
 */
 
 console.error('3 4	3 +	5 -	3 x	7 /	4 =	5 *');
@@ -362,7 +338,7 @@ function processButtonPress(aButtonData) {
 			CALC_STATE.display = numberToString(CALC_STATE.total);
 			addTapeRow(CALC_STATE.total, 'total', false);
 
-			// CALC_STATE.curval = CALC_STATE.total;
+			CALC_STATE.curval = CALC_STATE.total;
 			// CALC_STATE.total = 0;
 			
 			CALC_STATE.lastop = '=';
