@@ -24,8 +24,7 @@
 
 */
 
-console.error('3 4	3 +	5 -	3 x	7 /	4 =	5 *');
-
+// console.error('3 4	3 +	5 -	3 x	7 /	4 =	5 *');
 
 /* state of the calculator, set initially by a key_clear */
 var CALC_STATE = {
@@ -179,6 +178,10 @@ function processButtonPress(aButtonData) {
 			// ignore the keypress if the display number is already 12 digits
 			if (CALC_STATE.display.replace(/\./, '').length >= 12) {
 				break;
+			}
+
+			if (CALC_STATE.lastkey == 'key_equals') {
+				CALC_STATE.subtotal = null;
 			}
 
 			// ignore any duplicate periods
@@ -346,9 +349,11 @@ function processButtonPress(aButtonData) {
 
 		case 'key_clear': // FIXME: is this "CE" or "C" ? (CE clears one entry whereas C clears everything)
 			// FIXME: this isn't exactly right, probably should not clear total, or something
+
 			CALC_STATE.display = '0';
 			CALC_STATE.curval = 0;
 			CALC_STATE.total = 0;
+			CALC_STATE.subtotal = null;
 			CALC_STATE.lastval = null;
 			CALC_STATE.lastop = null;
 
