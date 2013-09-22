@@ -659,6 +659,8 @@ function roundNumber(v) {
 /** return a user-friendly display of a number */
 function numberToString(v, abbreviate) {
 
+	if (v === null) v = 0;
+
 	var res = toFixed(roundNumber(v), 2);
 
 	// chop off the '.00' from the end

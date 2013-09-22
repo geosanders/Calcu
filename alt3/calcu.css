@@ -46,6 +46,8 @@ body {
 }
 #main #tape_detail .row.minus {
 	color: #fd0000;
+	padding-left: 0px;
+	margin-left: 10px;
 }
 #main #tape_detail .row.times {
 	color: #007e00;
@@ -62,6 +64,7 @@ body {
 	background: #ffffff;
 	-webkit-transition: background-color 300ms linear;
 	padding-bottom: 10px;
+	padding-left: 0;
 }
 
 #main #tape_detail .row.total:last-child { 
