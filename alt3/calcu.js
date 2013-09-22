@@ -4,7 +4,7 @@
 * DONE comma's in large numbers
 * DONE operator into the box
 * DONE fix CSS on long numbahs (match calculator)
-* spacing on totals/subtotals
+* DONE spacing on totals/subtotals
 * implement CE/C, 3 times should clear the whole tape
 * add space in, match the C, black
 
@@ -21,6 +21,30 @@
 = 3	= +	= -	= x	= /	= =	= *
 
 * 4	* +	* -	* x	* /	* =	* *
+
+
+25 -> X register, shown on display
++  -> flag register
+9  -> X register (shown on display), pushed "25" into Y register
+= (or other) -> check flag register, notice that it's addition, do it, "34" -> X register
+
+
+
+123 +  (TOTAL: 0,    X: 123, Y: 0,   FLAG: +)
+456 +  (TOTAL: 123,  X: 456, Y: 123, FLAG: +)
+333 -  (TOTAL: 579,  X: 333, Y: 456, FLAG: -)
+*      (TOTAL: 246,  X: -,   Y: 333, FLAG: *)
+
+
+123 +  (TOTAL: 0,    X: 123, Y: 0,   FLAG: +)
+456 +  (TOTAL: 123,  X: 456, Y: 123, FLAG: +)
+*      (TOTAL: 579,  X: -,   Y: 333, FLAG: *)
+
+x      (TOTAL: 579,  X: 579, Y: -,   FLAG: x)
+=      (TOTAL: 1158, X: -,   Y: 579, FLAT: =)
+
+
+
 
 */
 
