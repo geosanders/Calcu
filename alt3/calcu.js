@@ -225,6 +225,11 @@ function processButtonPress(aButtonData) {
 
 		case 'key_plus':
 
+			if (CALC_STATE.lastop == '*') {
+				CALC_STATE.funkyMultiply = true;
+				CALC_STATE.subtotalSaved = CALC_STATE.subtotal;
+			}
+
 			CALC_STATE.subtotal = null;
 			
 			if (CALC_STATE.lastkey != 'key_total') {
@@ -252,6 +257,13 @@ function processButtonPress(aButtonData) {
 			break;
 
 		case 'key_equals':
+
+			console.log(CALC_STATE.lastkey);
+
+			if  (CALC_STATE.lastkey == 'key_plus' && CALC_STATE.funkyMultiply) {
+				console.error('BINGO');
+				CALC_STATE.total *= CALC_STATE.subtotalSaved;
+			}
 
 			if  (CALC_STATE.lastop == '*') {
 
@@ -290,6 +302,8 @@ function processButtonPress(aButtonData) {
 				CALC_STATE.display = numberToString(CALC_STATE.subtotal);
 				addTapeRow(CALC_STATE.subtotal, 'total', false);
 			}
+
+			CALC_STATE.funkyMultiply = false;
 
 			CALC_STATE.curval = CALC_STATE.subtotal;
 
@@ -347,6 +361,7 @@ function processButtonPress(aButtonData) {
 			// CALC_STATE.total = 0;
 			
 			CALC_STATE.lastop = '=';
+			CALC_STATE.funkyMultiply = false;
 			break;
 
 		case 'key_clear': // FIXME: is this "CE" or "C" ? (CE clears one entry whereas C clears everything)
