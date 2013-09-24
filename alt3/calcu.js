@@ -38,7 +38,6 @@ var CALC_STATE = {
 	total: 0, // the running total
 	subtotal: null, // subtotal
 	lastop: null, // the prior operator entered
-	justCleared: false, // flag to indicate if we just cleared
 	lastkey: null,
 	lastEqualOp: null,
 
@@ -363,25 +362,20 @@ function processButtonPress(aButtonData) {
 			CALC_STATE.funkyMultiply = false;
 			break;
 
-		case 'key_clear': // FIXME: is this "CE" or "C" ? (CE clears one entry whereas C clears everything)
+		case 'key_clear':
+			// FIXME: is this "CE" or "C" ? (CE clears one entry whereas C clears everything)
 			// FIXME: this isn't exactly right, probably should not clear total, or something
 
 			CALC_STATE.display = '0';
 			CALC_STATE.curval = 0;
-			CALC_STATE.total = 0;
-			CALC_STATE.subtotal = null;
 			CALC_STATE.lastval = null;
-			CALC_STATE.lastop = null;
-
-			if (CALC_STATE.justCleared) {
+			
+			if (CALC_STATE.lastkey == 'key_clear') {
 				clearTape();
+				CALC_STATE.total = 0;
+				CALC_STATE.subtotal = null;
+				CALC_STATE.lastop = null;
 			}
-
-	    	CALC_STATE.justCleared = true;
-
-	    	updateDisplay();
-
-	    	return;
 		
 	}
 
@@ -624,7 +618,9 @@ function updateDisplay() {
 		if (currentDigit % 3 == 2) currentString = '<span class="thousand-sep"></span>' + currentString;
 		currentDigit++;
 	};
-	myReadoutHtml = currentString.replace(/^<span[^<]*<\/span>/, ''); // <- rip any initial thousand separators
+	myReadoutHtml = currentString.replace(/^([-]?)<span[^<]*<\/span>/, function(rep1, rep2) {
+		return rep2;
+	}); // <- rip any initial thousand separators
 
 	$('#readout').html('<div class="inner">'+myReadoutHtml+'</div>');
 
