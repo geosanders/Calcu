@@ -258,11 +258,10 @@ function processButtonPress(aButtonData) {
 
 		case 'key_equals':
 
-			console.log(CALC_STATE.lastkey);
-
 			if  (CALC_STATE.lastkey == 'key_plus' && CALC_STATE.funkyMultiply) {
-				console.error('BINGO');
+				addTapeRow(CALC_STATE.total, 'equals', false);
 				CALC_STATE.total *= CALC_STATE.subtotalSaved;
+				addTapeRow(CALC_STATE.total, 'total', false);
 			}
 
 			if  (CALC_STATE.lastop == '*') {
@@ -712,8 +711,6 @@ function numberToString(v, abbreviate) {
  */
 function addTapeRow(aValue, aType, abbreviate) {
 	
-	// console.log("addTapeRow");
-
 	var myType = aType;
 	if (myType == '*') {
 		myType = 'times';
@@ -736,9 +733,7 @@ function addTapeRow(aValue, aType, abbreviate) {
 	myRow.addClass(myType);
 
 	var v = aValue ? numberToString(aValue, abbreviate) : aValue;
-	// console.log(v);
-	// console.log(typeof v);
-
+	
 	if (myType == 'regular') {
 		v += '&nbsp;&nbsp;&nbsp;';
 	}
