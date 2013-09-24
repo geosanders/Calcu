@@ -306,7 +306,7 @@ function processButtonPress(aButtonData) {
 				if (CALC_STATE.lastkey == 'key_plus') {
 					CALC_STATE.curval = CALC_STATE.total;
 				}
-				CALC_STATE.subtotal *= CALC_STATE.curval;
+				if (CALC_STATE.lastkey != 'key_equals') CALC_STATE.subtotal *= CALC_STATE.curval;
 			}
 
 			CALC_STATE.display = numberToString(CALC_STATE.subtotal);
@@ -372,6 +372,9 @@ function processButtonPress(aButtonData) {
 	CALC_STATE.lastkey = myButtonData.name;
 
 	CALC_STATE.justCleared = false;
+
+	// console.error('after operation:');
+	// console.error(CALC_STATE);
 	
 	updateDisplay();
 
