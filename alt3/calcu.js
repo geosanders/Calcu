@@ -317,19 +317,21 @@ function processButtonPress(aButtonData) {
 
 		case 'key_divide':
 
-			addTapeRow(CALC_STATE.curval, '/', true);
-
 			if (CALC_STATE.lastop == '/') {
 				CALC_STATE.subtotal = CALC_STATE.subtotal / CALC_STATE.curval;
 			} else {
 				if (CALC_STATE.lastop == '*') {
 					CALC_STATE.subtotal *= CALC_STATE.curval;
 				} else {
+					if (CALC_STATE.lastkey == 'key_plus') {
+						CALC_STATE.curval = CALC_STATE.total;
+					}
 					CALC_STATE.subtotal = CALC_STATE.curval;
 				}
 			}
 
 			CALC_STATE.display = numberToString(CALC_STATE.subtotal);
+			addTapeRow(CALC_STATE.curval, '/', true);
 
 			CALC_STATE.curval = CALC_STATE.subtotal;
 			
