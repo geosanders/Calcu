@@ -375,6 +375,7 @@ function processButtonPress(aButtonData) {
 				CALC_STATE.total = 0;
 				CALC_STATE.subtotal = null;
 				CALC_STATE.lastop = null;
+				CALC_STATE.funkyMultiply = false;
 			}
 		
 	}
