@@ -24,7 +24,7 @@ PASS - 666 - 8	- +	- -	- x	6 - 8 / 4 - = - *       -707.88
 
 */
 
-// the tests are ats the bottom of this file
+// the tests are at the bottom of this file
 var autotest = false;
 var debug = false;
 
@@ -908,6 +908,17 @@ if (autotest) {
 		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
 		console.assert(CALC_STATE.total == 225);
 		if (CALC_STATE.total != 225) return;
+
+		CALC_STATE.emulateKeyPressQueue = ['key_clear', 'key_clear',
+			'key_1', 'key_2', 'key_5', 'key_0', 'key_times',
+			'key_2', 'key_equals',
+			'key_clear',
+			'key_1', 'key_5', 'key_0', 'key_0', 'key_divide',
+			'key_2', 'key_equals',
+			];
+		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
+		console.assert(CALC_STATE.subtotal == 750);
+		if (CALC_STATE.subtotal != 750) return;
 
 
 
