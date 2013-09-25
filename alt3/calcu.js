@@ -5,16 +5,16 @@
 * DONE operator into the box
 * DONE fix CSS on long numbahs (match calculator)
 * DONE spacing on totals/subtotals
-* implement CE/C, 3 times should clear the whole tape
+* DONE implement CE/C, 3 times should clear the whole tape
 * add space in, match the C, black
 
-PASS - 		3 4	3 +	5 -	3 x	7 /	4 =	5 *                     338.00
+PASS - 		3 4	3 +	5 -	3 x	7 /	4 =	5 *      338.00
  
-666 + 5	+ +	+ -	+ x	+ /	+ =	+ *                 928884.00
+666 + 5	+ +	+ -	+ x	+ /	+ =	+ *           928884.00
 
-666 - 8	- +	- -	- x	6 - 8 / 4 - = - *           -700.00
+666 - 8	- +	- -	- x	6 - 8 / 4 - = - *       -700.00
 
-0.666 x 5 x + x - x x x / x = x *               -7.75
+0.666 x 5 x + x - x x x / x = x *             -7.75
 
 / 4	/ +	/ -	/ x	/ /	/ =	/ *
 
@@ -25,8 +25,8 @@ PASS - 		3 4	3 +	5 -	3 x	7 /	4 =	5 *                     338.00
 */
 
 // the tests are at the bottom of this file
-var autotest = true;
-var debug = true;
+var autotest = false;
+var debug = false;
 
 /* state of the calculator, set initially by a key_clear */
 var CALC_STATE = {
@@ -226,6 +226,7 @@ function processButtonPress(aButtonData) {
 
 		case 'key_plus':
 
+			/*
 			if (CALC_STATE.lastop == '*') {
 				CALC_STATE.funkyMultiply = true;
 				CALC_STATE.subtotalSaved = CALC_STATE.subtotal;
@@ -233,8 +234,10 @@ function processButtonPress(aButtonData) {
 			}
 
 			CALC_STATE.subtotal = null;
+			*/
 			
 			if (CALC_STATE.lastkey != 'key_total') {
+				if (CALC_STATE.lastkey == 'key_times') CALC_STATE.curval = CALC_STATE.subtotal;
 				CALC_STATE.total += CALC_STATE.curval;
 				addTapeRow(CALC_STATE.curval, '+', false);
 			} else {
@@ -242,7 +245,6 @@ function processButtonPress(aButtonData) {
 			}
 
 			CALC_STATE.display = numberToString(CALC_STATE.total);
-			
 
 			CALC_STATE.lastop = '+';
 			break;
@@ -260,6 +262,7 @@ function processButtonPress(aButtonData) {
 
 		case 'key_equals':
 
+			/*
 			if  (CALC_STATE.lastkey == 'key_plus' && CALC_STATE.funkyMultiply) {
 				addTapeRow(CALC_STATE.total, 'equals', false);
 				CALC_STATE.total = CALC_STATE.total * CALC_STATE.subtotalSaved;
@@ -271,6 +274,17 @@ function processButtonPress(aButtonData) {
                 
 				CALC_STATE.lastEqualOp = '*';
 
+			}
+			*/
+
+			if  (CALC_STATE.lastop == '+') {
+				if (CALC_STATE.subtotal != null) {
+					CALC_STATE.total *= CALC_STATE.subtotal;
+					CALC_STATE.display = numberToString(CALC_STATE.total);
+					addTapeRow(CALC_STATE.total, '=', false);
+					// CALC_STATE.subtotal = null;
+					return;
+				}
 			}
 
 			if  (CALC_STATE.lastop == '*') {
@@ -285,8 +299,10 @@ function processButtonPress(aButtonData) {
 
 			}
 
+			/*
 			if  (CALC_STATE.lastkey == 'key_plus' && CALC_STATE.funkyMultiply)
 				CALC_STATE.display = numberToString(CALC_STATE.total);
+			*/
 
 			if  (CALC_STATE.lastop == '=' && CALC_STATE.lastEqualOp == '*') {
 				addTapeRow(CALC_STATE.subtotal, 'equals', false);
@@ -314,7 +330,7 @@ function processButtonPress(aButtonData) {
 				addTapeRow(CALC_STATE.subtotal, 'total', false);
 			}
 
-			CALC_STATE.funkyMultiply = false;
+			// CALC_STATE.funkyMultiply = false;
 
 			CALC_STATE.curval = CALC_STATE.subtotal;
 
@@ -328,10 +344,13 @@ function processButtonPress(aButtonData) {
 			if (CALC_STATE.lastop == '/') {
 				CALC_STATE.subtotal = CALC_STATE.subtotal / CALC_STATE.curval;
 			} else {
+				/*
 				if (CALC_STATE.lastkey == 'key_plus') {
 					CALC_STATE.curval = CALC_STATE.total;
 				}
-				if (CALC_STATE.lastkey != 'key_equals') CALC_STATE.subtotal *= CALC_STATE.curval;
+				*/
+				// if (CALC_STATE.lastkey != 'key_equals')
+				CALC_STATE.subtotal *= CALC_STATE.curval;
 			}
 
 			CALC_STATE.display = numberToString(CALC_STATE.subtotal);
@@ -482,33 +501,6 @@ function toFixed(value, precision) {
     return precision ? integral + '.' +  padding + fraction : integral;
 }
 
-/**
- * Apply an operator to two numbers
- */
-function applyOperator(aOperator, aOperand1, aOperand2) {
-
-	switch (aOperator) {
-		case 'times':
-		case 'mul':
-		case '*':
-			return aOperand1 * aOperand2;
-		case 'divide':
-		case 'div':
-		case '/':
-			return aOperand1 / aOperand2;
-		case 'plus':
-		case '+':
-			return aOperand1 + aOperand2;
-		case 'minus':
-		case '-':
-			return aOperand1 - aOperand2;
-		default:
-			console.log("Can't apply operator: " + aOperator);
-			return aOperand1;
-	}
-
-}
-
 /** return number to two decimal places */
 function roundNumber(v) {
 	return parseFloat(parseFloat(v).toFixed(2));
@@ -542,8 +534,6 @@ function numberToString(v, abbreviate) {
 	// return r;
 
 }
-
-
 
 /**
  * Add a row to the tape thing
@@ -611,7 +601,6 @@ function clearTape() {
 	$('#tape_detail').html('');
 
 }
-
 
 var ws;
 
@@ -760,8 +749,8 @@ if (autotest) {
 			'key_2', 'key_times', 'key_plus', 'key_plus',
 			'key_equals', 'key_equals'];
 		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
-		console.assert(CALC_STATE.subtotal == 16);
-		if (CALC_STATE.subtotal != 16) return;
+		console.assert(CALC_STATE.total == 16);
+		if (CALC_STATE.total != 16) return;
 
 		CALC_STATE.emulateKeyPressQueue = ['key_clear', 'key_clear',
 			'key_1', 'key_0', 'key_0', 'key_0', 'key_divide',
@@ -851,6 +840,16 @@ if (autotest) {
 		if (CALC_STATE.subtotal != 56088) return;
 
 		CALC_STATE.emulateKeyPressQueue = ['key_clear', 'key_clear',
+			'key_1', 'key_5', 'key_times',
+			'key_times',
+			'key_plus',
+			'key_2', 'key_plus',
+			];
+		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
+		console.assert(CALC_STATE.total == 227);
+		if (CALC_STATE.total != 227) return;
+
+		CALC_STATE.emulateKeyPressQueue = ['key_clear', 'key_clear',
 			'key_3', 'key_4', 'key_3', 'key_plus',
 			'key_5', 'key_minus',
 			'key_3', 'key_times',
@@ -884,20 +883,6 @@ if (autotest) {
 		CALC_STATE.emulateKeyPressQueue = ['key_clear', 'key_clear'];
 		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
 		console.warn('ALL TESTS PASSED');
-
-
-/**
-
----
-
-15 x
-x
-+ (225)
-
----
-
-**/
-
 
 	}, 500);
 }
