@@ -12,7 +12,7 @@ PASS - 		3 4	3 +	5 -	3 x	7 /	4 =	5 *      338.00
  
 666 + 5	+ +	+ -	+ x	+ /	+ =	+ *           928884.00
 
-666 - 8	- +	- -	- x	6 - 8 / 4 - = - *       -700.00
+PASS - 666 - 8	- +	- -	- x	6 - 8 / 4 - = - *       -707.88
 
 0.666 x 5 x + x - x x x / x = x *             -7.75
 
@@ -20,7 +20,7 @@ PASS - 		3 4	3 +	5 -	3 x	7 /	4 =	5 *      338.00
 
 = 3	= +	= -	= x	= /	= =	= *
 
-* 4	* +	* -	* x	* /	* =	* *
+15 + 14 * 4	* +	* -	* x	* /	* =	* *
 
 */
 
@@ -882,6 +882,35 @@ if (autotest) {
 		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
 		console.assert(CALC_STATE.total == -707.8857142857142);
 		if (CALC_STATE.total != -707.8857142857142) return;
+
+		CALC_STATE.emulateKeyPressQueue = ['key_clear', 'key_clear',
+			'key_1', 'key_2', 'key_5', 'key_0', 'key_times',
+			'key_2', 'key_equals'
+			];
+		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
+		console.assert(CALC_STATE.subtotal == 2500);
+		if (CALC_STATE.subtotal != 2500) return;
+
+		CALC_STATE.emulateKeyPressQueue = [
+			'key_1', 'key_4', 'key_0', 'key_0', 'key_divide',
+			'key_2', 'key_equals'
+			];
+		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
+		console.assert(CALC_STATE.subtotal == 700);
+		if (CALC_STATE.subtotal != 700) return;
+
+		CALC_STATE.emulateKeyPressQueue = ['key_clear', 'key_clear',
+			'key_1', 'key_5', 'key_times',
+			'key_1', 'key_5', 'key_plus',
+			'key_equals'
+			];
+		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
+		console.assert(CALC_STATE.total == 225);
+		if (CALC_STATE.total != 225) return;
+
+
+
+
 
 		CALC_STATE.emulateKeyPressQueue = ['key_clear', 'key_clear',
 			'key_6', 'key_6', 'key_6',
