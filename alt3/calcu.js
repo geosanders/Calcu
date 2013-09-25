@@ -8,7 +8,7 @@
 * implement CE/C, 3 times should clear the whole tape
 * add space in, match the C, black
 
-3 4	3 +	5 -	3 x	7 /	4 =	5 *                     338.00
+PASS - 		3 4	3 +	5 -	3 x	7 /	4 =	5 *                     338.00
  
 666 + 5	+ +	+ -	+ x	+ /	+ =	+ *                 928884.00
 
@@ -25,8 +25,8 @@
 */
 
 // the tests are at the bottom of this file
-var autotest = false;
-var debug = false;
+var autotest = true;
+var debug = true;
 
 /* state of the calculator, set initially by a key_clear */
 var CALC_STATE = {
@@ -229,6 +229,7 @@ function processButtonPress(aButtonData) {
 			if (CALC_STATE.lastop == '*') {
 				CALC_STATE.funkyMultiply = true;
 				CALC_STATE.subtotalSaved = CALC_STATE.subtotal;
+				// CALC_STATE.curval = CALC_STATE.subtotal;
 			}
 
 			CALC_STATE.subtotal = null;
@@ -263,15 +264,11 @@ function processButtonPress(aButtonData) {
 				addTapeRow(CALC_STATE.total, 'equals', false);
 				CALC_STATE.total = CALC_STATE.total * CALC_STATE.subtotalSaved;
 
-
-                // TODO
 				CALC_STATE.subtotal = CALC_STATE.total;
 				CALC_STATE.lastCurval = CALC_STATE.subtotalSaved;
 
-
 				addTapeRow(CALC_STATE.total, 'total', false);
                 
-                // TODO
 				CALC_STATE.lastEqualOp = '*';
 
 			}
@@ -361,8 +358,7 @@ function processButtonPress(aButtonData) {
 			CALC_STATE.display = numberToString(CALC_STATE.subtotal);
 			addTapeRow(CALC_STATE.curval, '/', true);
 
-            // TODO check this
-			// CALC_STATE.curval = CALC_STATE.subtotal;
+            // CALC_STATE.curval = CALC_STATE.subtotal;
 			
 			CALC_STATE.lastop = '/';
 			break;
@@ -823,6 +819,68 @@ if (autotest) {
 		console.assert(CALC_STATE.total == 8);
 		if (CALC_STATE.total != 8) return;
 
+		CALC_STATE.emulateKeyPressQueue = ['key_clear', 'key_clear',
+			'key_2', 'key_plus',
+			'key_3', 'key_times',
+			'key_4', 'key_equals',
+			'key_plus',
+			'key_5', 'key_minus',
+			'key_total'];
+		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
+		console.assert(CALC_STATE.total == 9);
+		if (CALC_STATE.total != 9) return;
+
+		CALC_STATE.emulateKeyPressQueue = ['key_clear', 'key_clear',
+			'key_8', 'key_divide',
+			'key_3', 'key_times',
+			'key_3', 'key_period', 'key_7', 'key_equals',
+			'key_plus',
+			'key_9', 'key_plus',
+			'key_total'];
+		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
+		console.assert(CALC_STATE.total == 18.866666666666667);
+		if (CALC_STATE.total != 18.866666666666667) return;
+
+		CALC_STATE.emulateKeyPressQueue = ['key_clear', 'key_clear',
+			'key_1', 'key_2', 'key_3', 'key_times',
+			'key_7', 'key_5', 'key_6', 'key_clear',
+			'key_4', 'key_5', 'key_6', 'key_equals',
+			];
+		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
+		console.assert(CALC_STATE.subtotal == 56088);
+		if (CALC_STATE.subtotal != 56088) return;
+
+		CALC_STATE.emulateKeyPressQueue = ['key_clear', 'key_clear',
+			'key_3', 'key_4', 'key_3', 'key_plus',
+			'key_5', 'key_minus',
+			'key_3', 'key_times',
+			'key_7', 'key_divide',
+			'key_4', 'key_equals',
+			];
+		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
+		console.assert(CALC_STATE.subtotal == 5.25);
+		if (CALC_STATE.subtotal != 5.25) return;
+
+		CALC_STATE.emulateKeyPressQueue = [
+			'key_5', 'key_total',
+			];
+		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
+		console.assert(CALC_STATE.total == 338);
+		if (CALC_STATE.total != 338) return;
+
+		CALC_STATE.emulateKeyPressQueue = ['key_clear', 'key_clear',
+			'key_6', 'key_6', 'key_6',
+			'key_minus', 'key_8',
+			'key_minus', 'key_plus',
+			'key_minus', 'key_minus',
+			'key_minus', 'key_times',
+			'key_6', 'key_minus', 'key_8', 'key_divide', 'key_4',
+			'key_minus', 'key_equals', 'key_minus', 'key_total'
+			];
+		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
+		// console.assert(CALC_STATE.total == -707.88);
+		// if (CALC_STATE.total != -707.88) return;
+
 		CALC_STATE.emulateKeyPressQueue = ['key_clear', 'key_clear'];
 		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
 		console.warn('ALL TESTS PASSED');
@@ -837,17 +895,6 @@ x
 + (225)
 
 ---
-
-
----
-
-343 +
-5 -
-3 x
-7 /
-4 =
-5 *
-338
 
 **/
 
