@@ -227,7 +227,6 @@ function processButtonPress(aButtonData) {
 			if (CALC_STATE.lastop == '*') {
 				CALC_STATE.funkyMultiply = true;
 				CALC_STATE.subtotalSaved = CALC_STATE.subtotal;
-				CALC_STATE.totalSaved = CALC_STATE.total;
 			}
 
 			CALC_STATE.subtotal = null;
@@ -259,9 +258,8 @@ function processButtonPress(aButtonData) {
 		case 'key_equals':
 
 			if  (CALC_STATE.lastkey == 'key_plus' && CALC_STATE.funkyMultiply) {
-				CALC_STATE.total -= CALC_STATE.totalSaved;
 				addTapeRow(CALC_STATE.total, 'equals', false);
-				CALC_STATE.total = (CALC_STATE.subtotalSaved * CALC_STATE.total) + CALC_STATE.totalSaved;
+				CALC_STATE.total = CALC_STATE.total * CALC_STATE.subtotalSaved;
 				addTapeRow(CALC_STATE.total, 'total', false);
 			}
 
