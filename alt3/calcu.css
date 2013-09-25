@@ -107,8 +107,9 @@ body {
 	padding-top: 26px;
 	*/
 	padding-right: 50px;
-	font-size: 105px;
-	padding-top: 36px;
+	font-size: 100px;
+	padding-top: 41px;
+	white-space: nowrap;
 }
 
 #main .calc_01 {
