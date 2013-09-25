@@ -274,6 +274,9 @@ function processButtonPress(aButtonData) {
 					// }
 					CALC_STATE.display = numberToString(CALC_STATE.total);
 					addTapeRow(CALC_STATE.total, '=', false);
+
+					updateDisplay();
+
 					// CALC_STATE.subtotal = null;
 					return;
 				}
@@ -316,6 +319,8 @@ function processButtonPress(aButtonData) {
 				CALC_STATE.display = numberToString(CALC_STATE.subtotal);
 				addTapeRow(CALC_STATE.subtotal, 'total', false);
 			}
+
+			updateDisplay();
 
 			CALC_STATE.curval = CALC_STATE.subtotal;
 
@@ -898,4 +903,4 @@ if (autotest) {
 
 	}, 500);
 }
-// console.error('3 4	3 +	5 -	3 x	7 /	4 =	5 *');
+
