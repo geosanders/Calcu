@@ -227,6 +227,7 @@ function processButtonPress(aButtonData) {
 			if (CALC_STATE.lastop == '*') {
 				CALC_STATE.funkyMultiply = true;
 				CALC_STATE.subtotalSaved = CALC_STATE.subtotal;
+				CALC_STATE.totalSaved = CALC_STATE.total;
 			}
 
 			CALC_STATE.subtotal = null;
@@ -258,8 +259,9 @@ function processButtonPress(aButtonData) {
 		case 'key_equals':
 
 			if  (CALC_STATE.lastkey == 'key_plus' && CALC_STATE.funkyMultiply) {
+				CALC_STATE.total -= CALC_STATE.totalSaved;
 				addTapeRow(CALC_STATE.total, 'equals', false);
-				CALC_STATE.total *= CALC_STATE.subtotalSaved;
+				CALC_STATE.total = (CALC_STATE.subtotalSaved * CALC_STATE.total) + CALC_STATE.totalSaved;
 				addTapeRow(CALC_STATE.total, 'total', false);
 			}
 
@@ -274,6 +276,9 @@ function processButtonPress(aButtonData) {
 				CALC_STATE.lastEqualOp = '*';
 
 			}
+
+			if  (CALC_STATE.lastkey == 'key_plus' && CALC_STATE.funkyMultiply)
+				CALC_STATE.display = numberToString(CALC_STATE.total);
 
 			if  (CALC_STATE.lastop == '=' && CALC_STATE.lastEqualOp == '*') {
 				addTapeRow(CALC_STATE.subtotal, 'equals', false);
@@ -384,8 +389,8 @@ function processButtonPress(aButtonData) {
 
 	CALC_STATE.justCleared = false;
 
-	// console.error('after operation:');
-	// console.error(CALC_STATE);
+	console.log('after operation:');
+	console.log(JSON.stringify(CALC_STATE, null, 4));
 	
 	updateDisplay();
 
@@ -729,7 +734,7 @@ function addTapeRow(aValue, aType, abbreviate) {
 
 	myRow.addClass(myType);
 
-	var v = aValue ? numberToString(aValue, abbreviate) : aValue;
+	var v = aValue ? numberToString(aValue, abbreviate) : (aValue === null ? '0' : aValue);
 	
 	if (myType == 'regular') {
 		v += '&nbsp;&nbsp;&nbsp;';
