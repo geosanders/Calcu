@@ -199,9 +199,6 @@ function processButtonPress(aButtonData) {
 	    		CALC_STATE.display = '0';
 	    	}
 
-	    	if (CALC_STATE.subtotal == 'key_equals') {
-	    		CALC_STATE.subtotal = null;
-	    	}
 	    	if (CALC_STATE.lastkey == 'key_total') {
 	    		CALC_STATE.total = 0;
 	    	}
@@ -404,6 +401,10 @@ function processButtonPress(aButtonData) {
 			CALC_STATE.display = '0';
 			CALC_STATE.curval = 0;
 			CALC_STATE.lastval = null;
+
+			if (CALC_STATE.lastkey == 'key_equals') {
+				CALC_STATE.subtotal = null;
+			}
 			
 			if (CALC_STATE.lastkey == 'key_clear') {
 				clearTape();
