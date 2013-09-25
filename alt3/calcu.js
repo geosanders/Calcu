@@ -24,7 +24,7 @@ PASS - 		3 4	3 +	5 -	3 x	7 /	4 =	5 *      338.00
 
 */
 
-// the tests are at the bottom of this file
+// the tests are ats the bottom of this file
 var autotest = false;
 var debug = false;
 
@@ -42,6 +42,7 @@ var CALC_STATE = {
 	lastop: null, // the prior operator entered
 	lastkey: null,
 	lastEqualOp: null,
+	lastNonAdditionOp: null,
 
 	// operands: [0], // the operand stack
 	// readout: '0', // the currently in the readout
@@ -56,9 +57,6 @@ var CALC_STATE = {
 
 /* map key combinations to buttons and data */
 var KEY_DATA = {
-	// NOTES: "*" key acts like CE if pressed once and then fully clears if pressed again, with some funky edge cases
-	// CE specifically only deletes the current entry but the prior result is still there
-	// Hm - "*" is actually the "total" button...
 	key_backspace: { keys:[{code:8,shift:0}], action: 'backspace', serialCode: 'bs' },
 	key_clear: { keys:[{code:12,shift:1},{code:27,shift:0}], action: 'clear', serialCode: 'ce' },
 	key_divide: { keys:[{code:111,shift:0},{code:191,shift:0}], action: 'setop', op:'/', serialCode: 'div' },
@@ -122,6 +120,8 @@ function emulateKeyPress(aKeyName) {
 	}
 
 	// if any item to process
+	if (debug) console.info('HIT: ' + myNext);
+
 	if (myNext) {
 		keyStateDown(myNext);
 		// setTimeout(function() {
@@ -226,16 +226,6 @@ function processButtonPress(aButtonData) {
 
 		case 'key_plus':
 
-			/*
-			if (CALC_STATE.lastop == '*') {
-				CALC_STATE.funkyMultiply = true;
-				CALC_STATE.subtotalSaved = CALC_STATE.subtotal;
-				// CALC_STATE.curval = CALC_STATE.subtotal;
-			}
-
-			CALC_STATE.subtotal = null;
-			*/
-			
 			if (CALC_STATE.lastkey != 'key_total') {
 				if (CALC_STATE.lastkey == 'key_times' || CALC_STATE.lastkey == 'key_divide')
 					CALC_STATE.curval = CALC_STATE.subtotal;
@@ -251,8 +241,6 @@ function processButtonPress(aButtonData) {
 			break;
 
 		case 'key_minus':
-
-			// CALC_STATE.subtotal = null;
 
 			if (CALC_STATE.lastkey != 'key_total') {
 				if (CALC_STATE.lastkey == 'key_times' || CALC_STATE.lastkey == 'key_divide')
@@ -271,29 +259,19 @@ function processButtonPress(aButtonData) {
 
 		case 'key_equals':
 
-			/*
-
-			if  (CALC_STATE.lastkey == 'key_plus' && CALC_STATE.funkyMultiply) {
-				addTapeRow(CALC_STATE.total, 'equals', false);
-				CALC_STATE.total = CALC_STATE.total * CALC_STATE.subtotalSaved;
-
-				CALC_STATE.subtotal = CALC_STATE.total;
-				CALC_STATE.lastCurval = CALC_STATE.subtotalSaved;
-
-				addTapeRow(CALC_STATE.total, 'total', false);
-                
-				CALC_STATE.lastEqualOp = '*';
-
-			}
-
-			if  (CALC_STATE.lastkey == 'key_plus' && CALC_STATE.funkyMultiply)
-				CALC_STATE.display = numberToString(CALC_STATE.total);
-
-			*/
-
 			if  (CALC_STATE.lastop == '+' || CALC_STATE.lastop == '-') {
 				if (CALC_STATE.subtotal != null) {
-					CALC_STATE.total *= CALC_STATE.subtotal;
+					if (CALC_STATE.lastNonAdditionOp == '*') {
+						CALC_STATE.total *= CALC_STATE.subtotal;
+						CALC_STATE.curval = CALC_STATE.subtotal;
+					}
+					if (CALC_STATE.lastNonAdditionOp == '/') {
+						CALC_STATE.subtotal = CALC_STATE.subtotal / CALC_STATE.total;
+						CALC_STATE.curval = CALC_STATE.subtotal;
+					}
+					// } else if (CALC_STATE.lastNonAdditionOp == '/') {
+						// CALC_STATE.total /= CALC_STATE.subtotal;
+					// }
 					CALC_STATE.display = numberToString(CALC_STATE.total);
 					addTapeRow(CALC_STATE.total, '=', false);
 					// CALC_STATE.subtotal = null;
@@ -322,8 +300,8 @@ function processButtonPress(aButtonData) {
 
 			if  (CALC_STATE.lastop == '/') {
 
-				CALC_STATE.lastCurval = CALC_STATE.curval;
-				CALC_STATE.subtotal = CALC_STATE.subtotal / CALC_STATE.curval;
+				CALC_STATE.lastCurval = CALC_STATE.subtotal;
+				CALC_STATE.subtotal /= CALC_STATE.curval;
 				CALC_STATE.display = numberToString(CALC_STATE.subtotal);
 				addTapeRow(CALC_STATE.curval, 'equals', true);
 				addTapeRow(CALC_STATE.subtotal, 'total', false);
@@ -334,12 +312,10 @@ function processButtonPress(aButtonData) {
 
 			if  (CALC_STATE.lastop == '=' && CALC_STATE.lastEqualOp == '/') {
 				addTapeRow(CALC_STATE.subtotal, 'equals', false);
-				CALC_STATE.subtotal = CALC_STATE.subtotal / CALC_STATE.lastCurval;
+				CALC_STATE.subtotal /= CALC_STATE.lastCurval;
 				CALC_STATE.display = numberToString(CALC_STATE.subtotal);
 				addTapeRow(CALC_STATE.subtotal, 'total', false);
 			}
-
-			// CALC_STATE.funkyMultiply = false;
 
 			CALC_STATE.curval = CALC_STATE.subtotal;
 
@@ -348,47 +324,59 @@ function processButtonPress(aButtonData) {
 
 		case 'key_times':
 
-			if (CALC_STATE.subtotal == null) CALC_STATE.subtotal = 1;
+			if (CALC_STATE.lastNonAdditionOp == '/') {
 
-			if (CALC_STATE.lastop == '/') {
-				CALC_STATE.subtotal = CALC_STATE.subtotal / CALC_STATE.curval;
+				// finish the earlier operation
+				CALC_STATE.subtotal /= CALC_STATE.curval;
+
 			} else {
-				/*
-				if (CALC_STATE.lastkey == 'key_plus') {
+				if (CALC_STATE.lastkey == 'key_plus' || CALC_STATE.lastkey == 'key_minus')
 					CALC_STATE.curval = CALC_STATE.total;
+
+				if (CALC_STATE.subtotal == null) {
+					CALC_STATE.subtotal = CALC_STATE.curval;
+				} else {
+					if (CALC_STATE.lastkey != 'key_equals')
+						CALC_STATE.subtotal *= CALC_STATE.curval;
 				}
-				*/
-				// if (CALC_STATE.lastkey != 'key_equals')
-				CALC_STATE.subtotal *= CALC_STATE.curval;
+
 			}
 
 			CALC_STATE.display = numberToString(CALC_STATE.subtotal);
 			addTapeRow(CALC_STATE.curval, '*', true);
 
 			CALC_STATE.lastop = '*';
+			CALC_STATE.lastNonAdditionOp = '*';
+
 			break;
 
 		case 'key_divide':
 
-			if (CALC_STATE.lastop == '/') {
-				CALC_STATE.subtotal = CALC_STATE.subtotal / CALC_STATE.curval;
+			if (CALC_STATE.lastNonAdditionOp == '*') {
+
+				// finish the earlier operation
+				CALC_STATE.subtotal *= CALC_STATE.curval;
+
 			} else {
-				if (CALC_STATE.lastop == '*') {
-					CALC_STATE.subtotal *= CALC_STATE.curval;
-				} else {
-					if (CALC_STATE.lastkey == 'key_plus' || CALC_STATE.lastkey == 'key_minus') {
-						CALC_STATE.curval = CALC_STATE.total;
-					}
+
+				if (CALC_STATE.lastkey == 'key_plus' || CALC_STATE.lastkey == 'key_minus')
+					CALC_STATE.curval = CALC_STATE.total;
+
+				if (CALC_STATE.subtotal == null) {
 					CALC_STATE.subtotal = CALC_STATE.curval;
+				} else {
+					if (CALC_STATE.lastkey != 'key_equals')
+						CALC_STATE.subtotal /= CALC_STATE.curval;
 				}
+
 			}
 
 			CALC_STATE.display = numberToString(CALC_STATE.subtotal);
 			addTapeRow(CALC_STATE.curval, '/', true);
-
-            // CALC_STATE.curval = CALC_STATE.subtotal;
 			
 			CALC_STATE.lastop = '/';
+			CALC_STATE.lastNonAdditionOp = '/';
+
 			break;
 
 		case 'key_total':
@@ -400,7 +388,6 @@ function processButtonPress(aButtonData) {
 			// CALC_STATE.total = 0;
 			
 			CALC_STATE.lastop = '=';
-			CALC_STATE.funkyMultiply = false;
 			break;
 
 		case 'key_clear':
@@ -416,7 +403,7 @@ function processButtonPress(aButtonData) {
 				CALC_STATE.total = 0;
 				CALC_STATE.subtotal = null;
 				CALC_STATE.lastop = null;
-				CALC_STATE.funkyMultiply = false;
+				CALC_STATE.lastNonAdditionOp = null;
 			}
 		
 	}
@@ -886,8 +873,24 @@ if (autotest) {
 			'key_minus', 'key_equals', 'key_minus', 'key_total'
 			];
 		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
-		console.assert(CALC_STATE.total == -707.88);
-		if (CALC_STATE.total != -707.88) return;
+		console.assert(CALC_STATE.total == -707.8857142857142);
+		if (CALC_STATE.total != -707.8857142857142) return;
+
+		CALC_STATE.emulateKeyPressQueue = ['key_clear', 'key_clear',
+			'key_6', 'key_6', 'key_6',
+			'key_plus', 'key_5',
+			'key_plus', 'key_plus',
+			'key_plus', 'key_minus',
+			'key_plus', 'key_times',
+			'key_plus', 'key_divide',
+			'key_plus', 'key_equals',
+			'key_plus', 'key_total'
+			];
+		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
+		// console.assert(CALC_STATE.total == 928884.99);
+		// if (CALC_STATE.total != 928884.99) return;
+
+		return;
 
 		CALC_STATE.emulateKeyPressQueue = ['key_clear', 'key_clear'];
 		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
