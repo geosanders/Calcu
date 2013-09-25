@@ -24,7 +24,9 @@
 
 */
 
-// console.error('3 4	3 +	5 -	3 x	7 /	4 =	5 *');
+// the tests are at the bottom of this file
+var autotest = false;
+var debug = false;
 
 /* state of the calculator, set initially by a key_clear */
 var CALC_STATE = {
@@ -122,9 +124,9 @@ function emulateKeyPress(aKeyName) {
 	// if any item to process
 	if (myNext) {
 		keyStateDown(myNext);
-		setTimeout(function() {
+		// setTimeout(function() {
 			keyStateUp(myNext);
-		}, 200);
+		// }, 200);
 	}
 
 }
@@ -260,7 +262,18 @@ function processButtonPress(aButtonData) {
 			if  (CALC_STATE.lastkey == 'key_plus' && CALC_STATE.funkyMultiply) {
 				addTapeRow(CALC_STATE.total, 'equals', false);
 				CALC_STATE.total = CALC_STATE.total * CALC_STATE.subtotalSaved;
+
+
+                // TODO
+				CALC_STATE.subtotal = CALC_STATE.total;
+				CALC_STATE.lastCurval = CALC_STATE.subtotalSaved;
+
+
 				addTapeRow(CALC_STATE.total, 'total', false);
+                
+                // TODO
+				CALC_STATE.lastEqualOp = '*';
+
 			}
 
 			if  (CALC_STATE.lastop == '*') {
@@ -348,7 +361,8 @@ function processButtonPress(aButtonData) {
 			CALC_STATE.display = numberToString(CALC_STATE.subtotal);
 			addTapeRow(CALC_STATE.curval, '/', true);
 
-			CALC_STATE.curval = CALC_STATE.subtotal;
+            // TODO check this
+			// CALC_STATE.curval = CALC_STATE.subtotal;
 			
 			CALC_STATE.lastop = '/';
 			break;
@@ -387,187 +401,16 @@ function processButtonPress(aButtonData) {
 
 	CALC_STATE.justCleared = false;
 
-	console.log('after operation:');
-	console.log(JSON.stringify(CALC_STATE, null, 4));
+	if (debug) {
+		console.debug('after operation:');
+		console.debug(JSON.stringify(CALC_STATE, null, 4));
+	}
 	
 	updateDisplay();
 
 	return;
 
-
-
-	// if (myButtonData.action == 'append') {
-
-	// 	CALC_STATE.justCleared = false;
-
-	// 	if (CALC_STATE.state == 'opsetwait' || CALC_STATE.state == 'postcalc') {
-	// 		CALC_STATE.readout = '0';
-	// 		CALC_STATE.state = 'input';
-	// 	}
-
-	// 	var r = CALC_STATE.readout;
-	// 	if (r == '0') {
-	// 		r = myButtonData.item;
-	// 	}
-	// 	else {
-
-	// 		// handle period separately
-	// 		if (myButtonData.item == '.') {
-	// 			// can't add two periods to a number
-	// 			if (r.indexOf('.') < 0) {
-	// 				r += myButtonData.item;
-	// 			}
-	// 		}
-
-	// 		// otherwise just append
-	// 		else {
-	// 			r += myButtonData.item;
-	// 		}
-	// 	}
-	// 	// discard this change if it's now too long
-	// 	if (r.length < 12) {
-	// 		CALC_STATE.readout = r;
-	// 	}
-	// }
-	// else if (myButtonData.action == 'backspace') {
-
-	// 	CALC_STATE.justCleared = false;
-
-	// 	if (CALC_STATE.state == 'opsetwait') {
-	// 		CALC_STATE.readout = '0';
-	// 		CALC_STATE.state = 'input';
-	// 	}
-
-	// 	var r = CALC_STATE.readout;
-	// 	if (r.length > 1) {
-	// 		r = r.substring(0, r.length-1);
-	// 	}
-	// 	else {
-	// 		r = '0';
-	// 	}
-	// 	CALC_STATE.readout = r;
-	// }
-	// else if (myButtonData.action == 'clear') {
-	// 	CALC_STATE.operator = null;
-	// 	CALC_STATE.operands = [0];
-	// 	CALC_STATE.readout = '0';
-	// 	CALC_STATE.state = 'input';
-
-	// 	// if this is the second time it's being cleared, we clear the tape too
-	// 	if (CALC_STATE.justCleared) {
-	// 		clearTape();
-	// 	}
-
-	// 	CALC_STATE.justCleared = true;
-
-	// }
-	// else if (myButtonData.action == 'setop') {
-
-	// 	CALC_STATE.justCleared = false;
-
-
-	// 	console.log(CALC_STATE.state);
-
-	// 	// if op not set or in postcalc state then we do the opsetwait thing
-	// 	if (!CALC_STATE.operator || CALC_STATE.state == 'postcalc') {
-
-	// 		var myPriorState = CALC_STATE.state;
-
-	// 		// push the value onto the operand stack
-	// 		var v = roundNumber(CALC_STATE.readout);
-	// 		CALC_STATE.operands[1] = v;
-	// 		CALC_STATE.operands[0] = 0;
-	// 		CALC_STATE.operator = myButtonData.op;
-	// 		CALC_STATE.state = 'opsetwait';
-
-	// 		// in postcalc we don't output the prior result
-	// 		if (myPriorState != 'postcalc') {
-	// 			addTapeRow(v, 'regular');
-	// 		}
-
-	// 	}
-
-	// 	// if the operator was already set, then we treat it like an equals
-	// 	else if (CALC_STATE.operator) {
-			
-	// 		_processCalcEquals();
-
-	// 		// var v = roundNumber(CALC_STATE.readout);
-
-	// 		// _processCalcEquals();
-
-	// 		// CALC_STATE.operands[1] = roundNumber(CALC_STATE.readout);
-	// 		// CALC_STATE.operands[0] = 0;
-	// 		// CALC_STATE.operator = myButtonData.op;
-	// 		// CALC_STATE.state = 'opsetwait';
-
-	// 		// push the value onto the operand stack
-	// 		var v = roundNumber(CALC_STATE.readout);
-	// 		CALC_STATE.operands[1] = v;
-	// 		CALC_STATE.operands[0] = 0;
-	// 		CALC_STATE.operator = myButtonData.op;
-	// 		CALC_STATE.state = 'opsetwait';
-
-	// 	}
-
-	// 	else {
-	// 		console.log("setop called but we're in some odd unknown state, not doing anything...")
-	// 	}
-	// }
-	
-
-	// if (myButtonData.action == 'equals') {
-
-	// 	CALC_STATE.justCleared = false;
-
-	// 	// only proceed if not in opsetwait mode and if there is an operator
-	// 	if (CALC_STATE.state == 'input' && CALC_STATE.operator) {
-	// 		_processCalcEquals();
-	// 	}
-
-	// }
-
-	// // update the last operand
-	// CALC_STATE.operands[0] = roundNumber(CALC_STATE.readout);
-
-	// updateDisplay();
-
 }
-
-/** helper called from processButtonPress() */
-/*
-function _processCalcEquals() {
-
-	var myOperator = CALC_STATE.operator;
-	addTapeRow(CALC_STATE.operands[0], myOperator);
-
-	var v = null;
-
-	console.log("Doing calculation: " + CALC_STATE.operator);
-	if (CALC_STATE.operator == '+') {
-		v = roundNumber(CALC_STATE.operands[1] + CALC_STATE.operands[0]);
-	}
-	else if (CALC_STATE.operator == '-') {
-		v = roundNumber(CALC_STATE.operands[1] - CALC_STATE.operands[0]);
-	}
-	else if (CALC_STATE.operator == '/') {
-		v = roundNumber(CALC_STATE.operands[1] / CALC_STATE.operands[0]);
-	}
-	else if (CALC_STATE.operator == '*') {
-		v = roundNumber(CALC_STATE.operands[1] * CALC_STATE.operands[0]);
-	}
-	console.log("Result of calculation is " + v);
-
-	CALC_STATE.operands = [v];
-	CALC_STATE.operator = null;
-	CALC_STATE.state = 'postcalc';
-	
-	CALC_STATE.readout = numberToString(v);
-	addTapeRow(null, 'separator');
-	addTapeRow(v, 'total');
-
-}
-*/
 
 function updateDisplay() {
 
@@ -886,3 +729,129 @@ $(function() {
 	clearTape();
 
 });
+
+if (autotest) {
+	setTimeout(function() {
+
+		CALC_STATE.emulateKeyPressQueue = ['key_2', 'key_times', 'key_4', 'key_plus', 'key_equals'];
+		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
+		console.assert(CALC_STATE.total == 8);
+		if (CALC_STATE.total != 8) return;
+
+		CALC_STATE.emulateKeyPressQueue = ['key_clear', 'key_clear',
+			'key_2', 'key_plus', 'key_4', 'key_plus', 'key_5', 'key_minus', 'key_total'];
+		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
+		console.assert(CALC_STATE.total == 1);
+		if (CALC_STATE.total != 1) return;
+
+		CALC_STATE.emulateKeyPressQueue = ['key_clear', 'key_clear',
+			'key_1', 'key_plus', 'key_1', 'key_plus', 'key_1', 'key_plus', 'key_1', 'key_plus',
+			'key_4', 'key_times', 'key_5', 'key_plus', 'key_5', 'key_plus', 'key_5', 'key_plus',
+			 'key_equals'];
+		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
+		console.assert(CALC_STATE.total == 76);
+		if (CALC_STATE.total != 76) return;
+
+		CALC_STATE.emulateKeyPressQueue = ['key_clear', 'key_clear',
+			'key_2', 'key_plus', 'key_4', 'key_times',
+			'key_5', 'key_plus', 'key_5', 'key_plus', 'key_5', 'key_plus',
+			 'key_equals'];
+		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
+		console.assert(CALC_STATE.total == 68);
+		if (CALC_STATE.total != 68) return;
+
+		CALC_STATE.emulateKeyPressQueue = ['key_clear', 'key_clear',
+			'key_2', 'key_times', 'key_plus', 'key_plus',
+			'key_equals', 'key_equals'];
+		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
+		console.assert(CALC_STATE.subtotal == 16);
+		if (CALC_STATE.subtotal != 16) return;
+
+		CALC_STATE.emulateKeyPressQueue = ['key_clear', 'key_clear',
+			'key_1', 'key_0', 'key_0', 'key_0', 'key_divide',
+			'key_1', 'key_0', 'key_divide',
+			'key_divide',
+			'key_divide',
+			'key_divide',
+			'key_equals'];
+		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
+		console.assert(CALC_STATE.subtotal == 0.01);
+		if (CALC_STATE.subtotal != 0.01) return;
+
+		CALC_STATE.emulateKeyPressQueue = ['key_clear', 'key_clear',
+			'key_2', 'key_times',
+			'key_5', 'key_times',
+			'key_times',
+			'key_times',
+			'key_times'];
+		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
+		console.assert(CALC_STATE.subtotal == 1250);
+		if (CALC_STATE.subtotal != 1250) return;
+
+		CALC_STATE.emulateKeyPressQueue = ['key_clear', 'key_clear',
+			'key_2', 'key_times',
+			'key_5', 'key_times',
+			'key_equals',
+			'key_equals',
+			'key_equals'];
+		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
+		console.assert(CALC_STATE.subtotal == 5000);
+		if (CALC_STATE.subtotal != 5000) return;
+
+		CALC_STATE.emulateKeyPressQueue = ['key_clear', 'key_clear',
+			'key_2', 'key_5', 'key_times', 'key_3', 'key_0', 'key_equals'];
+		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
+		console.assert(CALC_STATE.subtotal == 750);
+		if (CALC_STATE.subtotal != 750) return;
+
+		CALC_STATE.emulateKeyPressQueue = [
+			'key_2', 'key_5', 'key_times', 'key_3', 'key_0', 'key_equals'];
+		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
+		console.assert(CALC_STATE.subtotal == 750);
+		if (CALC_STATE.subtotal != 750) return;
+
+		CALC_STATE.emulateKeyPressQueue = ['key_clear', 'key_clear',
+			'key_4', 'key_5', 'key_plus', 'key_1', 'key_9', 'key_plus', 
+			'key_divide', 'key_8', 'key_equals'];
+		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
+		console.assert(CALC_STATE.subtotal == 8);
+		if (CALC_STATE.subtotal != 8) return;
+
+		CALC_STATE.emulateKeyPressQueue = ['key_clear', 'key_clear',
+			'key_2', 'key_times', 'key_4', 'key_plus', 'key_equals'];
+		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
+		console.assert(CALC_STATE.total == 8);
+		if (CALC_STATE.total != 8) return;
+
+		CALC_STATE.emulateKeyPressQueue = ['key_clear', 'key_clear'];
+		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
+		console.warn('ALL TESTS PASSED');
+
+
+/**
+
+---
+
+15 x
+x
++ (225)
+
+---
+
+
+---
+
+343 +
+5 -
+3 x
+7 /
+4 =
+5 *
+338
+
+**/
+
+
+	}, 500);
+}
+// console.error('3 4	3 +	5 -	3 x	7 /	4 =	5 *');
