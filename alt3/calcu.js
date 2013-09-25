@@ -322,6 +322,8 @@ function processButtonPress(aButtonData) {
 
 			updateDisplay();
 
+			CALC_STATE.lastNonAdditionOp = null;
+
 			CALC_STATE.curval = CALC_STATE.subtotal;
 
 			CALC_STATE.lastop = '=';
