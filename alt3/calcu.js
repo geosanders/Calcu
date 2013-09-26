@@ -25,8 +25,8 @@ PASS - 666 - 8	- +	- -	- x	6 - 8 / 4 - = - *       -707.88
 */
 
 // the tests are at the bottom of this file
-var autotest = false;
-var debug = false;
+var autotest = true;
+var debug = true;
 
 /* state of the calculator, set initially by a key_clear */
 var CALC_STATE = {
@@ -424,6 +424,10 @@ function processButtonPress(aButtonData) {
 			CALC_STATE.lastval = null;
 			CALC_STATE.lastNonAdditionOpAfterEqual = false;
 			CALC_STATE.lastNonAdditionOp = null;
+
+			if (CALC_STATE.lastkey == 'key_plus') {
+				CALC_STATE.total = 0;
+			}
 
 			if (CALC_STATE.lastkey == 'key_equals') {
 				CALC_STATE.subtotal = null;
