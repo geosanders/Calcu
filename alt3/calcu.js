@@ -82,21 +82,21 @@ for (var i in KEY_DATA) {
 /**
  * Return the key name that corresponds to a serial code
  */
-function getKeyNameFromSerialCode(aSerialCode) {
-	for (i in KEY_DATA) {
-		if (KEY_DATA[i].serialCode && KEY_DATA[i].serialCode == aSerialCode) {
-			return i;
-		}
-	}
-	return null;
-}
+ function getKeyNameFromSerialCode(aSerialCode) {
+ 	for (i in KEY_DATA) {
+ 		if (KEY_DATA[i].serialCode && KEY_DATA[i].serialCode == aSerialCode) {
+ 			return i;
+ 		}
+ 	}
+ 	return null;
+ }
 
 /**
  * Emulate a full press of a key
  */
-function emulateKeyPress(aKeyName) {
+ function emulateKeyPress(aKeyName) {
 
-	var myNext = null;
+ 	var myNext = null;
 
 	// if the caller provided a key
 	if (aKeyName) {
@@ -121,9 +121,13 @@ function emulateKeyPress(aKeyName) {
 
 	if (myNext) {
 		keyStateDown(myNext);
-		setTimeout(function() {
+		if (autotest) {
 			keyStateUp(myNext);
-		}, 200);
+		} else {
+			setTimeout(function() {
+				keyStateUp(myNext);
+			}, 200);
+		}
 	}
 
 }
@@ -152,7 +156,7 @@ function keyStateUp(aKeyName) {
 /**
  * Process a button press appropriately
  */
-function processButtonPress(aButtonData) {
+ function processButtonPress(aButtonData) {
 
 	// deep copy the button data
 	var myButtonData = $.extend({}, aButtonData);
@@ -160,38 +164,38 @@ function processButtonPress(aButtonData) {
 
 	switch (myButtonData.name) {
 
-	    case 'key_00':
-	    case 'key_0':
-	    case 'key_1':
-	    case 'key_2':
-	    case 'key_3':
-	    case 'key_4':
-	    case 'key_5':
-	    case 'key_6':
-	    case 'key_7':
-	    case 'key_8':
-	    case 'key_9':
+		case 'key_00':
+		case 'key_0':
+		case 'key_1':
+		case 'key_2':
+		case 'key_3':
+		case 'key_4':
+		case 'key_5':
+		case 'key_6':
+		case 'key_7':
+		case 'key_8':
+		case 'key_9':
 		case 'key_period':
 
-			if (CALC_STATE.lastkey == 'key_equals') {
-				CALC_STATE.lastMultTop = null;
-			}
+		if (CALC_STATE.lastkey == 'key_equals') {
+			CALC_STATE.lastMultTop = null;
+		}
 
-	    	if  (
-	    			CALC_STATE.lastkey == 'key_plus' ||
-	    			CALC_STATE.lastkey == 'key_minus' || 
-	    			CALC_STATE.lastkey == 'key_times' ||
-	    			CALC_STATE.lastkey == 'key_divide' ||
-	    			CALC_STATE.lastkey == 'key_equals' ||
-	    			CALC_STATE.lastkey == 'key_total'
-	    		) {
-	    		CALC_STATE.display = '0';
-	    	}
+		if  (
+			CALC_STATE.lastkey == 'key_plus' ||
+			CALC_STATE.lastkey == 'key_minus' || 
+			CALC_STATE.lastkey == 'key_times' ||
+			CALC_STATE.lastkey == 'key_divide' ||
+			CALC_STATE.lastkey == 'key_equals' ||
+			CALC_STATE.lastkey == 'key_total'
+			) {
+			CALC_STATE.display = '0';
+	}
 
 	    	// ignore the keypress if the display number is already 12 digits
-			if (CALC_STATE.display.replace(/\./, '').length >= 12) {
-				break;
-			}
+	    	if (CALC_STATE.display.replace(/\./, '').length >= 12) {
+	    		break;
+	    	}
 
 	    	if (CALC_STATE.lastkey == 'key_total') {
 	    		CALC_STATE.total = 0;
@@ -202,7 +206,7 @@ function processButtonPress(aButtonData) {
 	    	}
 
 	    	// ignore any duplicate periods
-			if (myButtonData.name === 'key_period' && CALC_STATE.display.indexOf('.') > -1) break;
+	    	if (myButtonData.name === 'key_period' && CALC_STATE.display.indexOf('.') > -1) break;
 
 	    	CALC_STATE.display += myButtonData.item;
 	    	CALC_STATE.curval = parseFloat(CALC_STATE.display);
@@ -214,9 +218,9 @@ function processButtonPress(aButtonData) {
 
 	    	break;
 
-		case 'key_backspace':
+	    	case 'key_backspace':
 
-			if (CALC_STATE.lastkey == 'key_00' ||
+	    	if (CALC_STATE.lastkey == 'key_00' ||
 	    		CALC_STATE.lastkey == 'key_0' ||
 	    		CALC_STATE.lastkey == 'key_1' ||
 	    		CALC_STATE.lastkey == 'key_2' ||
@@ -227,31 +231,31 @@ function processButtonPress(aButtonData) {
 	    		CALC_STATE.lastkey == 'key_7' ||
 	    		CALC_STATE.lastkey == 'key_8' ||
 	    		CALC_STATE.lastkey == 'key_9' ||
-				CALC_STATE.lastkey == 'key_period') {
+	    		CALC_STATE.lastkey == 'key_period') {
 
-				var currentDisplay = CALC_STATE.display;
-				if (currentDisplay != '0')
-					CALC_STATE.display = currentDisplay.substring(0, currentDisplay.length-1);
-				if (CALC_STATE.display == '') CALC_STATE.display = '0';
+	    		var currentDisplay = CALC_STATE.display;
+	    	if (currentDisplay != '0')
+	    		CALC_STATE.display = currentDisplay.substring(0, currentDisplay.length-1);
+	    	if (CALC_STATE.display == '') CALC_STATE.display = '0';
 
-				updateDisplay();
-			}
-			return;
-			break;
+	    	updateDisplay();
+	    }
+	    return;
+	    break;
 
-		case 'key_plus':
+	    case 'key_plus':
 
-			if (CALC_STATE.lastkey != 'key_total') {
+	    if (CALC_STATE.lastkey != 'key_total') {
 
-				var currentVal = CALC_STATE.curval;
+	    	var currentVal = CALC_STATE.curval;
 
-				if (CALC_STATE.lastkey == 'key_times' || CALC_STATE.lastkey == 'key_divide') {
-					currentVal = CALC_STATE.subtotal;
-				}
-				
-				if (CALC_STATE.lastkey == 'key_equals') {
-					CALC_STATE.curval = CALC_STATE.subtotal;
-					currentVal = CALC_STATE.subtotal;
+	    	if (CALC_STATE.lastkey == 'key_times' || CALC_STATE.lastkey == 'key_divide') {
+	    		currentVal = CALC_STATE.subtotal;
+	    	}
+
+	    	if (CALC_STATE.lastkey == 'key_equals') {
+	    		CALC_STATE.curval = CALC_STATE.subtotal;
+	    		currentVal = CALC_STATE.subtotal;
 					// CALC_STATE.subtotal = CALC_STATE.multiplier;
 				}
 				
@@ -267,7 +271,7 @@ function processButtonPress(aButtonData) {
 			CALC_STATE.lastop = '+';
 			break;
 
-		case 'key_minus':
+			case 'key_minus':
 
 			if (CALC_STATE.lastkey != 'key_total') {
 
@@ -295,10 +299,10 @@ function processButtonPress(aButtonData) {
 			CALC_STATE.lastop = '-';
 			break;
 
-		case 'key_times':
+			case 'key_times':
 
 			if (CALC_STATE.lastkey == 'key_plus' || CALC_STATE.lastkey == 'key_minus' ||
-					CALC_STATE.lastkey == 'key_equals')
+				CALC_STATE.lastkey == 'key_equals')
 				CALC_STATE.curval = CALC_STATE.total;
 
 			if (!CALC_STATE.lastMultTop) {
@@ -321,10 +325,10 @@ function processButtonPress(aButtonData) {
 			
 			break;
 
-		case 'key_divide':
+			case 'key_divide':
 
 			if (CALC_STATE.lastkey == 'key_plus' || CALC_STATE.lastkey == 'key_minus' ||
-					CALC_STATE.lastkey == 'key_equals')
+				CALC_STATE.lastkey == 'key_equals')
 				CALC_STATE.curval = CALC_STATE.total;
 
 			if (!CALC_STATE.lastMultTop) {
@@ -347,7 +351,7 @@ function processButtonPress(aButtonData) {
 			
 			break;
 
-		case 'key_percent':
+			case 'key_percent':
 
 			if (CALC_STATE.lastop == '*') {
 
@@ -357,90 +361,94 @@ function processButtonPress(aButtonData) {
 				if (CALC_STATE.lastkey == 'key_plus' || CALC_STATE.lastkey == 'key_minus' ||
 					CALC_STATE.lastkey == 'key_equals')
 					CALC_STATE.curval = CALC_STATE.total;
-				*/
-	
-				CALC_STATE.curval = CALC_STATE.curval / 100;
-				CALC_STATE.subtotal = executeOp(CALC_STATE.curval, CALC_STATE.lastMultTop, CALC_STATE.subtotal);
-				CALC_STATE.lastMultTop = '*';
-				
-				addTapeRow(CALC_STATE.subtotal, 'total', true);
-				CALC_STATE.display = numberToString(CALC_STATE.subtotal);
-				CALC_STATE.lastop = '*';
+					*/
 
-			}
+					CALC_STATE.curval = CALC_STATE.curval / 100;
+					CALC_STATE.subtotal = executeOp(CALC_STATE.curval, CALC_STATE.lastMultTop, CALC_STATE.subtotal);
+					CALC_STATE.lastMultTop = '*';
 
-			if (CALC_STATE.lastop == '/') {
+					addTapeRow(CALC_STATE.subtotal, 'total', true);
+					CALC_STATE.display = numberToString(CALC_STATE.subtotal);
+					CALC_STATE.lastop = '*';
 
-				addTapeRow(CALC_STATE.curval, '%', true);
+				}
+
+				if (CALC_STATE.lastop == '/') {
+
+					addTapeRow(CALC_STATE.curval, '%', true);
 
 				/*
 				if (CALC_STATE.lastkey == 'key_plus' || CALC_STATE.lastkey == 'key_minus' ||
 					CALC_STATE.lastkey == 'key_equals')
 					CALC_STATE.curval = CALC_STATE.total;
-				*/
+					*/
 
-				CALC_STATE.curval = CALC_STATE.curval / 100; 
-				CALC_STATE.subtotal = executeOp(CALC_STATE.curval, CALC_STATE.lastMultTop, CALC_STATE.subtotal);
-				CALC_STATE.lastMultTop = '/';
-				
-				addTapeRow(CALC_STATE.subtotal, 'total', true);
-				CALC_STATE.display = numberToString(CALC_STATE.subtotal);
-				CALC_STATE.lastop = '/';
+					CALC_STATE.curval = CALC_STATE.curval / 100; 
+					CALC_STATE.subtotal = executeOp(CALC_STATE.curval, CALC_STATE.lastMultTop, CALC_STATE.subtotal);
+					CALC_STATE.lastMultTop = '/';
 
-			}
-			
-			break;
+					addTapeRow(CALC_STATE.subtotal, 'total', true);
+					CALC_STATE.display = numberToString(CALC_STATE.subtotal);
+					CALC_STATE.lastop = '/';
 
-		case 'key_equals':
+				}
 
-			if (CALC_STATE.lastMultTop) {
+				break;
 
-				if (CALC_STATE.lastkey == 'key_plus' || CALC_STATE.lastkey == 'key_minus') {
+				case 'key_equals':
 
-					if (CALC_STATE.lastMultTop == '*') {
-						CALC_STATE.subtotal = executeOp(CALC_STATE.multiplier, CALC_STATE.lastMultTop, CALC_STATE.total);
-						addTapeRow(CALC_STATE.multiplier, 'equals', true);
+				if (CALC_STATE.lastMultTop) {
+
+					if (CALC_STATE.lastkey == 'key_plus' || CALC_STATE.lastkey == 'key_minus') {
+
+						if (CALC_STATE.lastMultTop == '*') {
+							CALC_STATE.subtotal = executeOp(CALC_STATE.multiplier, CALC_STATE.lastMultTop, CALC_STATE.total);
+							addTapeRow(CALC_STATE.multiplier, 'equals', true);
+						} else {
+							CALC_STATE.subtotal = executeOp(CALC_STATE.total, CALC_STATE.lastMultTop, CALC_STATE.subtotal);
+							addTapeRow(CALC_STATE.total, 'equals', true);
+
+						}
+
+					} else if (CALC_STATE.lastkey == 'key_equals') {
+
+						if (CALC_STATE.lastMultTop == '*') {
+							CALC_STATE.subtotal = executeOp(CALC_STATE.multiplier, CALC_STATE.lastMultTop, CALC_STATE.subtotal);
+							addTapeRow(CALC_STATE.multiplier, 'equals', true);
+						} else {
+							CALC_STATE.subtotal = executeOp(CALC_STATE.curval, CALC_STATE.lastMultTop, CALC_STATE.subtotal);
+							addTapeRow(CALC_STATE.curval, 'equals', true);
+						}
+
 					} else {
-						CALC_STATE.subtotal = executeOp(CALC_STATE.total, CALC_STATE.lastMultTop, CALC_STATE.subtotal);
-						addTapeRow(CALC_STATE.total, 'equals', true);
 
-					}
+						if (CALC_STATE.lastkey != 'key_percent') {
+							if (CALC_STATE.lastop != '+' && CALC_STATE.lastop != '-') {
+								CALC_STATE.subtotal = executeOp(CALC_STATE.curval, CALC_STATE.lastMultTop, CALC_STATE.subtotal);
+							} else {
+								CALC_STATE.subtotal = executeOp(CALC_STATE.curval, CALC_STATE.lastMultTop, CALC_STATE.multiplier);
+							}
+							addTapeRow(CALC_STATE.curval, 'equals', true);
+						}
 
-				} else if (CALC_STATE.lastkey == 'key_equals') {
+						if (CALC_STATE.lastop == '/') {
+							CALC_STATE.divider = CALC_STATE.curval;
+						}
 
-					if (CALC_STATE.lastMultTop == '*') {
-						CALC_STATE.subtotal = executeOp(CALC_STATE.multiplier, CALC_STATE.lastMultTop, CALC_STATE.subtotal);
-						addTapeRow(CALC_STATE.multiplier, 'equals', true);
-					} else {
-				 		CALC_STATE.subtotal = executeOp(CALC_STATE.curval, CALC_STATE.lastMultTop, CALC_STATE.subtotal);
-				 		addTapeRow(CALC_STATE.curval, 'equals', true);
-				 	}
-
-				} else {
-
-					if (CALC_STATE.lastkey != 'key_percent') {
-						CALC_STATE.subtotal = executeOp(CALC_STATE.curval, CALC_STATE.lastMultTop, CALC_STATE.subtotal);
-						addTapeRow(CALC_STATE.curval, 'equals', true);
-					}
-					
-					if (CALC_STATE.lastop == '/') {
-						CALC_STATE.divider = CALC_STATE.curval;
 					}
 
 				}
 
-			}
+				CALC_STATE.display = numberToString(CALC_STATE.subtotal);
+				addTapeRow(CALC_STATE.subtotal, 'total', false);
 
-			CALC_STATE.display = numberToString(CALC_STATE.subtotal);
-			addTapeRow(CALC_STATE.subtotal, 'total', false);
+				break;
 
-			break;
 
-		
-		case 'key_total':
-			
-			CALC_STATE.display = numberToString(CALC_STATE.total);
-			CALC_STATE.curval = CALC_STATE.total;
+				case 'key_total':
+
+				CALC_STATE.display = numberToString(CALC_STATE.total);
+				CALC_STATE.curval = CALC_STATE.total;
 			// CALC_STATE.total = 0;
 			
 			CALC_STATE.lastMultTop = null;
@@ -462,7 +470,7 @@ function processButtonPress(aButtonData) {
 
 			break;
 
-		case 'key_clear':
+			case 'key_clear':
 
 			CALC_STATE.display = '0';
 			CALC_STATE.curval = 0;
@@ -479,12 +487,12 @@ function processButtonPress(aButtonData) {
 				CALC_STATE.lastkey == 'key_total') {
 
 				if (CALC_STATE.lastkey == 'key_clear') clearTape();
-				CALC_STATE.total = 0;
-				addTapeRow(CALC_STATE.total, 'total', false);
-				CALC_STATE.lastMultTop = null;
-				CALC_STATE.subtotal = null;
-				CALC_STATE.lastop = null;
-			}
+			CALC_STATE.total = 0;
+			addTapeRow(CALC_STATE.total, 'total', false);
+			CALC_STATE.lastMultTop = null;
+			CALC_STATE.subtotal = null;
+			CALC_STATE.lastop = null;
+		}
 		
 	}
 
@@ -579,15 +587,15 @@ function addThousandSeparators(aNumberInHtml) {
 
 // borrowed from: http://stackoverflow.com/questions/2221167/javascript-formatting-a-rounded-number-to-n-decimals/2909252#2909252
 function toFixed(value, precision) {
-    var precision = precision || 0,
-    neg = value < 0,
-    power = Math.pow(10, precision),
-    value = Math.round(value * power),
-    integral = String((neg ? Math.ceil : Math.floor)(value / power)),
-    fraction = String((neg ? -value : value) % power),
-    padding = new Array(Math.max(precision - fraction.length, 0) + 1).join('0');
+	var precision = precision || 0,
+	neg = value < 0,
+	power = Math.pow(10, precision),
+	value = Math.round(value * power),
+	integral = String((neg ? Math.ceil : Math.floor)(value / power)),
+	fraction = String((neg ? -value : value) % power),
+	padding = new Array(Math.max(precision - fraction.length, 0) + 1).join('0');
 
-    return precision ? integral + '.' +  padding + fraction : integral;
+	return precision ? integral + '.' +  padding + fraction : integral;
 }
 
 /** return number to two decimal places */
@@ -627,31 +635,31 @@ function numberToString(v, abbreviate) {
 /**
  * Add a row to the tape thing
  */
-function addTapeRow(aValue, aType, abbreviate) {
-	
-	var myType = aType;
-	if (myType == '*') {
-		myType = 'times';
-	}
-	else if (myType == '/') {
-		myType = 'divide';
-	}
-	else if (myType == '+') {
-		myType = 'plus';
-	}
-	else if (myType == '-') {
-		myType = 'minus';
-	}
-	else if (myType == '=') {
-		myType = 'equals';
-	}
-	else if (myType == '%') {
-		myType = 'percent';
-	}
+ function addTapeRow(aValue, aType, abbreviate) {
 
-	var myRow = $('<div class="row"></div>');
+ 	var myType = aType;
+ 	if (myType == '*') {
+ 		myType = 'times';
+ 	}
+ 	else if (myType == '/') {
+ 		myType = 'divide';
+ 	}
+ 	else if (myType == '+') {
+ 		myType = 'plus';
+ 	}
+ 	else if (myType == '-') {
+ 		myType = 'minus';
+ 	}
+ 	else if (myType == '=') {
+ 		myType = 'equals';
+ 	}
+ 	else if (myType == '%') {
+ 		myType = 'percent';
+ 	}
 
-	myRow.addClass(myType);
+ 	var myRow = $('<div class="row"></div>');
+
+ 	myRow.addClass(myType);
 
 	// TODO thousand separators
 	// var v = aValue ? addThousandSeparators(numberToString(aValue, abbreviate)) : (aValue === null ? '0' : aValue);
@@ -694,19 +702,19 @@ function addTapeRow(aValue, aType, abbreviate) {
 /**
  * Clear the tape
  */
-function clearTape() {
-	$('#tape_detail').html('');
-}
+ function clearTape() {
+ 	$('#tape_detail').html('');
+ }
 
-var ws;
+ var ws;
 
-function setupWebsocket() {
+ function setupWebsocket() {
 
-	if (typeof MozWebSocket != 'undefined') {
-		ws = new MozWebSocket('ws://'+window.location.host+'/serial-relay');
-	} else {
-		ws = new WebSocket('ws://'+window.location.host+'/serial-relay');
-	}
+ 	if (typeof MozWebSocket != 'undefined') {
+ 		ws = new MozWebSocket('ws://'+window.location.host+'/serial-relay');
+ 	} else {
+ 		ws = new WebSocket('ws://'+window.location.host+'/serial-relay');
+ 	}
 
 	// When the connection is open, send some data to the server
 	ws.onopen = function () {
@@ -787,14 +795,14 @@ $(function() {
 	});
 
 	document.ontouchstart = function(e) {
-    	e.preventDefault();
+		e.preventDefault();
 		if (e.target && e.target.id && (e.target.id+'').match(/^key_/)) {
 			keyStateDown(e.target.id);
 		}
 	}
 
 	document.ontouchend = function(e) {
-    	e.preventDefault();
+		e.preventDefault();
 		if (e.target && e.target.id && (e.target.id+'').match(/^key_/)) {
 			keyStateUp(null);
 		}
@@ -820,377 +828,392 @@ if (autotest) {
 		if (CALC_STATE.subtotal != 8) return;
 
 		CALC_STATE.emulateKeyPressQueue = ['key_clear', 'key_clear',
-			'key_2', 'key_plus', 'key_4', 'key_plus', 'key_5', 'key_minus', 'key_total'];
+		'key_2', 'key_plus', 'key_4', 'key_plus', 'key_5', 'key_minus', 'key_total'];
 		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
 		console.assert(CALC_STATE.total == 1);
 		if (CALC_STATE.total != 1) return;
 
 		CALC_STATE.emulateKeyPressQueue = ['key_clear', 'key_clear',
-			'key_1', 'key_plus', 'key_1', 'key_plus', 'key_1', 'key_plus', 'key_1', 'key_plus',
-			'key_4', 'key_times', 'key_5', 'key_plus', 'key_5', 'key_plus', 'key_5', 'key_plus',
-			 'key_equals'];
+		'key_1', 'key_plus', 'key_1', 'key_plus', 'key_1', 'key_plus', 'key_1', 'key_plus',
+		'key_4', 'key_times', 'key_5', 'key_plus', 'key_5', 'key_plus', 'key_5', 'key_plus',
+		'key_equals'];
 		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
 		console.assert(CALC_STATE.subtotal == 76);
 		if (CALC_STATE.subtotal != 76) return;
 
 		CALC_STATE.emulateKeyPressQueue = ['key_clear', 'key_clear',
-			'key_2', 'key_plus', 'key_4', 'key_times',
-			'key_5', 'key_plus', 'key_5', 'key_plus', 'key_5', 'key_plus',
-			 'key_equals'];
+		'key_2', 'key_plus', 'key_4', 'key_times',
+		'key_5', 'key_plus', 'key_5', 'key_plus', 'key_5', 'key_plus',
+		'key_equals'];
 		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
 		console.assert(CALC_STATE.subtotal == 68);
 		if (CALC_STATE.subtotal != 68) return;
 
 		CALC_STATE.emulateKeyPressQueue = ['key_clear', 'key_clear',
-			'key_2', 'key_times', 'key_plus', 'key_plus',
-			'key_equals', 'key_equals'];
+		'key_2', 'key_times', 'key_plus', 'key_plus',
+		'key_equals', 'key_equals'];
 		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
 		console.assert(CALC_STATE.subtotal == 16);
 		if (CALC_STATE.subtotal != 16) return;
 
 		CALC_STATE.emulateKeyPressQueue = ['key_clear', 'key_clear',
-			'key_1', 'key_0', 'key_0', 'key_0', 'key_divide',
-			'key_1', 'key_0', 'key_divide',
-			'key_divide',
-			'key_divide',
-			'key_divide',
-			'key_equals'];
+		'key_1', 'key_0', 'key_0', 'key_0', 'key_divide',
+		'key_1', 'key_0', 'key_divide',
+		'key_divide',
+		'key_divide',
+		'key_divide',
+		'key_equals'];
 		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
 		console.assert(CALC_STATE.subtotal == 0.01);
 		if (CALC_STATE.subtotal != 0.01) return;
 
 		CALC_STATE.emulateKeyPressQueue = ['key_clear', 'key_clear',
-			'key_2', 'key_times',
-			'key_5', 'key_times',
-			'key_times',
-			'key_times',
-			'key_times'];
+		'key_2', 'key_times',
+		'key_5', 'key_times',
+		'key_times',
+		'key_times',
+		'key_times'];
 		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
 		console.assert(CALC_STATE.subtotal == 1250);
 		if (CALC_STATE.subtotal != 1250) return;
 
 		CALC_STATE.emulateKeyPressQueue = ['key_clear', 'key_clear',
-			'key_2', 'key_times',
-			'key_5', 'key_times',
-			'key_equals',
-			'key_equals',
-			'key_equals'];
+		'key_2', 'key_times',
+		'key_5', 'key_times',
+		'key_equals',
+		'key_equals',
+		'key_equals'];
 		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
 		console.assert(CALC_STATE.subtotal == 5000);
 		if (CALC_STATE.subtotal != 5000) return;
 
 		CALC_STATE.emulateKeyPressQueue = ['key_clear', 'key_clear',
-			'key_2', 'key_5', 'key_times', 'key_3', 'key_0', 'key_equals'];
+		'key_2', 'key_5', 'key_times', 'key_3', 'key_0', 'key_equals'];
 		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
 		console.assert(CALC_STATE.subtotal == 750);
 		if (CALC_STATE.subtotal != 750) return;
 
 		CALC_STATE.emulateKeyPressQueue = [
-			'key_2', 'key_5', 'key_times', 'key_3', 'key_0', 'key_equals'];
+		'key_2', 'key_5', 'key_times', 'key_3', 'key_0', 'key_equals'];
 		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
 		console.assert(CALC_STATE.subtotal == 750);
 		if (CALC_STATE.subtotal != 750) return;
 
 		CALC_STATE.emulateKeyPressQueue = ['key_clear', 'key_clear',
-			'key_4', 'key_5', 'key_plus', 'key_1', 'key_9', 'key_plus', 
-			'key_divide', 'key_8', 'key_equals'];
+		'key_4', 'key_5', 'key_plus', 'key_1', 'key_9', 'key_plus', 
+		'key_divide', 'key_8', 'key_equals'];
 		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
 		console.assert(CALC_STATE.subtotal == 8);
 		if (CALC_STATE.subtotal != 8) return;
 
 		CALC_STATE.emulateKeyPressQueue = ['key_clear', 'key_clear',
-			'key_2', 'key_times', 'key_4', 'key_plus', 'key_equals'];
+		'key_2', 'key_times', 'key_4', 'key_plus', 'key_equals'];
 		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
 		console.assert(CALC_STATE.subtotal == 8);
 		if (CALC_STATE.subtotal != 8) return;
 
 		CALC_STATE.emulateKeyPressQueue = ['key_clear', 'key_clear',
-			'key_2', 'key_plus',
-			'key_3', 'key_times',
-			'key_4', 'key_equals',
-			'key_plus',
-			'key_5', 'key_minus',
-			'key_total'];
+		'key_2', 'key_plus',
+		'key_3', 'key_times',
+		'key_4', 'key_equals',
+		'key_plus',
+		'key_5', 'key_minus',
+		'key_total'];
 		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
 		console.assert(CALC_STATE.total == 9);
 		if (CALC_STATE.total != 9) return;
 
 		CALC_STATE.emulateKeyPressQueue = ['key_clear', 'key_clear',
-			'key_8', 'key_divide',
-			'key_3', 'key_times',
-			'key_3', 'key_period', 'key_7', 'key_equals',
-			'key_plus',
-			'key_9', 'key_plus',
-			'key_total'];
+		'key_8', 'key_divide',
+		'key_3', 'key_times',
+		'key_3', 'key_period', 'key_7', 'key_equals',
+		'key_plus',
+		'key_9', 'key_plus',
+		'key_total'];
 		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
 		console.assert(CALC_STATE.total == 18.866666666666667);
 		if (CALC_STATE.total != 18.866666666666667) return;
 
 		CALC_STATE.emulateKeyPressQueue = ['key_clear', 'key_clear',
-			'key_1', 'key_2', 'key_3', 'key_times',
-			'key_7', 'key_5', 'key_6', 'key_clear',
-			'key_4', 'key_5', 'key_6', 'key_equals',
-			];
+		'key_1', 'key_2', 'key_3', 'key_times',
+		'key_7', 'key_5', 'key_6', 'key_clear',
+		'key_4', 'key_5', 'key_6', 'key_equals',
+		];
 		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
 		console.assert(CALC_STATE.subtotal == 56088);
 		if (CALC_STATE.subtotal != 56088) return;
 
 		CALC_STATE.emulateKeyPressQueue = ['key_clear', 'key_clear',
-			'key_1', 'key_5', 'key_times',
-			'key_times',
-			'key_plus',
-			'key_2', 'key_plus',
-			];
+		'key_1', 'key_5', 'key_times',
+		'key_times',
+		'key_plus',
+		'key_2', 'key_plus',
+		];
 		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
 		console.assert(CALC_STATE.total == 227);
 		if (CALC_STATE.total != 227) return;
 
 		CALC_STATE.emulateKeyPressQueue = ['key_clear', 'key_clear',
-			'key_3', 'key_4', 'key_3', 'key_plus',
-			'key_5', 'key_minus',
-			'key_3', 'key_times',
-			'key_7', 'key_divide',
-			'key_4', 'key_equals',
-			];
+		'key_3', 'key_4', 'key_3', 'key_plus',
+		'key_5', 'key_minus',
+		'key_3', 'key_times',
+		'key_7', 'key_divide',
+		'key_4', 'key_equals',
+		];
 		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
 		console.assert(CALC_STATE.subtotal == 5.25);
 		if (CALC_STATE.subtotal != 5.25) return;
 
 		CALC_STATE.emulateKeyPressQueue = [
-			'key_5', 'key_total',
-			];
+		'key_5', 'key_total',
+		];
 		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
 		console.assert(CALC_STATE.total == 338);
 		if (CALC_STATE.total != 338) return;
 
 		CALC_STATE.emulateKeyPressQueue = ['key_clear', 'key_clear',
-			'key_1', 'key_2', 'key_5', 'key_0', 'key_times',
-			'key_2', 'key_equals'
-			];
+		'key_1', 'key_2', 'key_5', 'key_0', 'key_times',
+		'key_2', 'key_equals'
+		];
 		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
 		console.assert(CALC_STATE.subtotal == 2500);
 		if (CALC_STATE.subtotal != 2500) return;
 
 		CALC_STATE.emulateKeyPressQueue = [
-			'key_1', 'key_4', 'key_0', 'key_0', 'key_divide',
-			'key_2', 'key_equals'
-			];
+		'key_1', 'key_4', 'key_0', 'key_0', 'key_divide',
+		'key_2', 'key_equals'
+		];
 		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
 		console.assert(CALC_STATE.subtotal == 700);
 		if (CALC_STATE.subtotal != 700) return;
 
 		CALC_STATE.emulateKeyPressQueue = ['key_clear', 'key_clear',
-			'key_1', 'key_5', 'key_times',
-			'key_1', 'key_5', 'key_plus',
-			'key_equals'
-			];
+		'key_1', 'key_5', 'key_times',
+		'key_1', 'key_5', 'key_plus',
+		'key_equals'
+		];
 		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
 		console.assert(CALC_STATE.subtotal == 225);
 		if (CALC_STATE.subtotal != 225) return;
 
 		CALC_STATE.emulateKeyPressQueue = ['key_clear', 'key_clear',
-			'key_1', 'key_2', 'key_5', 'key_0', 'key_times',
-			'key_2', 'key_equals',
-			'key_clear',
-			'key_1', 'key_5', 'key_0', 'key_0', 'key_divide',
-			'key_2', 'key_equals',
-			];
+		'key_1', 'key_2', 'key_5', 'key_0', 'key_times',
+		'key_2', 'key_equals',
+		'key_clear',
+		'key_1', 'key_5', 'key_0', 'key_0', 'key_divide',
+		'key_2', 'key_equals',
+		];
 		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
 		console.assert(CALC_STATE.subtotal == 750);
 		if (CALC_STATE.subtotal != 750) return;
 
 		CALC_STATE.emulateKeyPressQueue = ['key_clear', 'key_clear',
-			'key_5', 'key_times', 'key_5', 'key_equals',
-			'key_total',
-			'key_7', 'key_times', 'key_1', 'key_2', 'key_equals',
-			];
+		'key_5', 'key_times', 'key_5', 'key_equals',
+		'key_total',
+		'key_7', 'key_times', 'key_1', 'key_2', 'key_equals',
+		];
 		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
 		console.assert(CALC_STATE.subtotal == 84);
 		if (CALC_STATE.subtotal != 84) return;
 
 		CALC_STATE.emulateKeyPressQueue = ['key_clear', 'key_clear',
-			'key_5', 'key_times', 'key_5', 'key_times',
-			'key_plus',
-			'key_plus',
-			'key_divide',
-			];
+		'key_5', 'key_times', 'key_5', 'key_times',
+		'key_plus',
+		'key_plus',
+		'key_divide',
+		];
 		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
 		console.assert(CALC_STATE.subtotal == 750);
 		if (CALC_STATE.subtotal != 750) return;
 
 		CALC_STATE.emulateKeyPressQueue = ['key_clear', 'key_clear',
-			'key_1', 'key_5', 'key_times',
-			'key_4', 'key_plus',
-			'key_2',
-			'key_equals',
-			];
+		'key_1', 'key_5', 'key_times',
+		'key_4', 'key_plus',
+		'key_2',
+		'key_equals',
+		];
 		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
 		console.assert(CALC_STATE.subtotal == 30);
 		if (CALC_STATE.subtotal != 30) return;
 
 		CALC_STATE.emulateKeyPressQueue = ['key_clear', 'key_clear',
-			'key_6', 'key_6', 'key_6',
-			'key_plus', 'key_5',
-			'key_plus', 'key_plus',
-			'key_plus', 'key_minus',
-			'key_plus', 'key_times',
-			'key_plus', 'key_divide',
-			'key_plus', 'key_equals',
-			'key_plus', 'key_total'
-			];
+		'key_6', 'key_6', 'key_6',
+		'key_plus', 'key_5',
+		'key_plus', 'key_plus',
+		'key_plus', 'key_minus',
+		'key_plus', 'key_times',
+		'key_plus', 'key_divide',
+		'key_plus', 'key_equals',
+		'key_plus', 'key_total'
+		];
 		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
 		console.assert(CALC_STATE.total == 928884.9985337243);
 		if (CALC_STATE.total != 928884.9985337243) return;
 
 		CALC_STATE.emulateKeyPressQueue = ['key_clear', 'key_clear',
-			'key_0', 'key_period', 'key_6', 'key_6', 'key_6',
-			'key_times', 'key_5',
-			'key_times', 'key_plus',
-			'key_times', 'key_minus',
-			'key_times', 'key_times',
-			'key_times', 'key_divide',
-			'key_times', 'key_equals'
-			];
+		'key_0', 'key_period', 'key_6', 'key_6', 'key_6',
+		'key_times', 'key_5',
+		'key_times', 'key_plus',
+		'key_times', 'key_minus',
+		'key_times', 'key_times',
+		'key_times', 'key_divide',
+		'key_times', 'key_equals'
+		];
 		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
 		console.assert(CALC_STATE.subtotal == 40187.3237092606);
 		if (CALC_STATE.subtotal != 40187.3237092606) return;
 
 		CALC_STATE.emulateKeyPressQueue = [
-			'key_times', 'key_total',
-			];
+		'key_times', 'key_total',
+		];
 		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
 		console.assert(CALC_STATE.total == -7.758900000000001);
 		if (CALC_STATE.total != -7.758900000000001) return;
 
 		CALC_STATE.emulateKeyPressQueue = ['key_clear', 'key_clear',
-			'key_5', 'key_plus', 'key_5', 'key_plus',
-			'key_clear', 'key_5', 'key_plus'
-			];
+		'key_5', 'key_plus', 'key_5', 'key_plus',
+		'key_clear', 'key_5', 'key_plus'
+		];
 		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
 		console.assert(CALC_STATE.total == 5);
 		if (CALC_STATE.total != 5) return;
 
 		CALC_STATE.emulateKeyPressQueue = ['key_clear', 'key_clear',
-			'key_1', 'key_0', 'key_0', 'key_0', 'key_divide',
-			'key_2', 'key_divide',
-			'key_5',
-			'key_equals', 'key_equals'
-			];
+		'key_1', 'key_0', 'key_0', 'key_0', 'key_divide',
+		'key_2', 'key_divide',
+		'key_5',
+		'key_equals', 'key_equals'
+		];
 		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
 		console.assert(CALC_STATE.subtotal == 20);
 		if (CALC_STATE.subtotal != 20) return;
 
 		CALC_STATE.emulateKeyPressQueue = ['key_clear', 'key_clear',
-			'key_1', 'key_0', 'key_0', 'key_0', 'key_divide',
-			'key_2', 'key_divide',
-			'key_5', 'key_divide',
-			'key_equals', 'key_equals'
-			];
+		'key_1', 'key_0', 'key_0', 'key_0', 'key_divide',
+		'key_2', 'key_divide',
+		'key_5', 'key_divide',
+		'key_equals', 'key_equals'
+		];
 		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
 		console.assert(CALC_STATE.subtotal == 4);
 		if (CALC_STATE.subtotal != 4) return;
 
 		CALC_STATE.emulateKeyPressQueue = ['key_clear', 'key_clear',
-			'key_2', 'key_times', 'key_5', 'key_times',
-			'key_plus', 'key_plus', 'key_plus'
-			];
+		'key_2', 'key_times', 'key_5', 'key_times',
+		'key_plus', 'key_plus', 'key_plus'
+		];
 		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
 		console.assert(CALC_STATE.total == 20);
 		if (CALC_STATE.total != 20) return;
 
 		CALC_STATE.emulateKeyPressQueue = ['key_clear', 'key_clear',
-			'key_2', 'key_times', 'key_5', 'key_equals',
-			'key_plus', 'key_plus', 'key_plus'
-			];
+		'key_2', 'key_times', 'key_5', 'key_equals',
+		'key_plus', 'key_plus', 'key_plus'
+		];
 		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
 		console.assert(CALC_STATE.total == 30);
 		if (CALC_STATE.total != 30) return;
 
 		CALC_STATE.emulateKeyPressQueue = ['key_clear', 'key_clear',
-			'key_5', 'key_times', 'key_4', 'key_equals',
-			'key_plus', 'key_equals'
-			];
+		'key_5', 'key_times', 'key_4', 'key_equals',
+		'key_plus', 'key_equals'
+		];
 		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
 		console.assert(CALC_STATE.subtotal == 100);
 		if (CALC_STATE.subtotal != 100) return;
 
 		CALC_STATE.emulateKeyPressQueue = ['key_clear', 'key_clear',
-			'key_5', 'key_times', 'key_2', 'key_equals',
-			'key_equals', 'key_equals'
-			];
+		'key_5', 'key_times', 'key_2', 'key_equals',
+		'key_equals', 'key_equals'
+		];
 		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
 		console.assert(CALC_STATE.subtotal == 250);
 		if (CALC_STATE.subtotal != 250) return;
 
 		CALC_STATE.emulateKeyPressQueue = ['key_clear', 'key_clear',
-			'key_6', 'key_6', 'key_6',
-			'key_minus', 'key_8',
-			'key_minus', 'key_plus',
-			'key_minus', 'key_minus',
-			'key_minus', 'key_times',
-			'key_6', 'key_minus', 'key_8', 'key_divide', 'key_4',
-			'key_minus', 'key_equals', 'key_minus', 'key_total'
-			];
+		'key_6', 'key_6', 'key_6',
+		'key_minus', 'key_8',
+		'key_minus', 'key_plus',
+		'key_minus', 'key_minus',
+		'key_minus', 'key_times',
+		'key_6', 'key_minus', 'key_8', 'key_divide', 'key_4',
+		'key_minus', 'key_equals', 'key_minus', 'key_total'
+		];
 		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
 		console.assert(CALC_STATE.total == -707.8857142857142);
 		if (CALC_STATE.total != -707.8857142857142) return;
 
 		CALC_STATE.emulateKeyPressQueue = ['key_clear', 'key_clear',
-			'key_1', 'key_0', 'key_0', 'key_0', 'key_divide',
-			'key_2', 'key_divide',
-			'key_5', 'key_equals',
-			'key_times', 'key_3', 'key_equals'
-			];
+		'key_1', 'key_0', 'key_0', 'key_0', 'key_divide',
+		'key_2', 'key_divide',
+		'key_5', 'key_equals',
+		'key_times', 'key_3', 'key_equals'
+		];
 		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
 		console.assert(CALC_STATE.subtotal == 300);
 		if (CALC_STATE.subtotal != 300) return;
 
 		CALC_STATE.emulateKeyPressQueue = ['key_clear', 'key_clear',
-			'key_2', 'key_plus',
-			'key_3', 'key_times',
-			'key_4', 'key_plus',
-			'key_4', 'key_divide',
-			'key_3', 'key_plus',
-			'key_equals'
-			];
+		'key_2', 'key_plus',
+		'key_3', 'key_times',
+		'key_4', 'key_plus',
+		'key_4', 'key_divide',
+		'key_3', 'key_plus',
+		'key_equals'
+		];
 		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
 		console.assert(CALC_STATE.subtotal == 1.3333333333333333);
 		if (CALC_STATE.subtotal != 1.3333333333333333) return;
 
 		CALC_STATE.emulateKeyPressQueue = ['key_clear', 'key_clear',
-			'key_8', 'key_divide',
-			'key_4', 'key_plus',
-			'key_2', 'key_plus',
-			'key_equals'
-			];
+		'key_8', 'key_divide',
+		'key_4', 'key_plus',
+		'key_2', 'key_plus',
+		'key_equals'
+		];
 		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
 		console.assert(CALC_STATE.subtotal == 1.3333333333333333);
 		if (CALC_STATE.subtotal != 1.3333333333333333) return;
 
 		CALC_STATE.emulateKeyPressQueue = ['key_clear', 'key_clear',
-			'key_2', 'key_plus',
-			'key_7', 'key_divide',
-			'key_3', 'key_plus',
-			'key_2', 'key_plus',
-			'key_equals'
-			];
+		'key_2', 'key_plus',
+		'key_7', 'key_divide',
+		'key_3', 'key_plus',
+		'key_2', 'key_plus',
+		'key_equals'
+		];
 		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
 		console.assert(CALC_STATE.subtotal == 1);
 		if (CALC_STATE.subtotal != 1) return;
 
 		CALC_STATE.emulateKeyPressQueue = ['key_clear', 'key_clear',
-			'key_2', 'key_plus',
-			'key_7', 'key_divide',
-			'key_3', 'key_plus',
-			'key_2',
-			'key_equals'
-			];
+		'key_2', 'key_plus',
+		'key_7', 'key_divide',
+		'key_3', 'key_plus',
+		'key_2',
+		'key_equals'
+		];
 		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
 		console.assert(CALC_STATE.subtotal == 3.5);
 		if (CALC_STATE.subtotal != 3.5) return;
 
 
 		/**
+
+
+		5500 *
+		2 =
+
+		+
+		2500
+		=
+
+		13 750 000
+
+
+		123456789012 +
+		1 =
+		123456789013
 
 		7 / 3.5 = + =         	(0.57)
 		7 / 3.5 = + + =         (1.14)
