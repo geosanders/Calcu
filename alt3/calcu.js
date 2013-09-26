@@ -121,9 +121,9 @@ function emulateKeyPress(aKeyName) {
 
 	if (myNext) {
 		keyStateDown(myNext);
-		// setTimeout(function() {
+		setTimeout(function() {
 			keyStateUp(myNext);
-		// }, 200);
+		}, 200);
 	}
 
 }
