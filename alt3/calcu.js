@@ -17,10 +17,10 @@ PASS - 0.666 x 5 x + x - x x x / x = x t      -7.75
 = 3 = + = - = x = / = = = t
 15 + 14 t 4 t + t - t x t / t = t t
 
-
+TODO
 * thousand separators
 * plus/minus
-* percentage
+* percentage - edge cases
 
 */
 
@@ -53,7 +53,7 @@ var CALC_STATE = {
 
 /* map key combinations to buttons and data */
 var KEY_DATA = {
-	key_backspace: { keys:[{code:8,shift:0}], action: 'backspace', serialCode: 'bs' },
+	key_backspace: { keys:[{code:8,shift:0}], action: 'backspace', serialCode: '>' },
 	key_clear: { keys:[{code:12,shift:1},{code:27,shift:0}], action: 'clear', serialCode: 'ce' },
 	key_divide: { keys:[{code:111,shift:0},{code:191,shift:0}], action: 'setop', op:'/', serialCode: 'div' },
 	key_times: { keys:[{code:106,shift:0}], action: 'setop', op:'*', serialCode: 'mul' },
