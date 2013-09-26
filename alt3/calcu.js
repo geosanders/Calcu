@@ -173,11 +173,6 @@ function processButtonPress(aButtonData) {
 	    case 'key_9':
 		case 'key_period':
 
-			// ignore the keypress if the display number is already 12 digits
-			if (CALC_STATE.display.replace(/\./, '').length >= 12) {
-				break;
-			}
-
 			if (CALC_STATE.lastkey == 'key_equals') {
 				CALC_STATE.lastMultTop = null;
 			}
@@ -192,6 +187,11 @@ function processButtonPress(aButtonData) {
 	    		) {
 	    		CALC_STATE.display = '0';
 	    	}
+
+	    	// ignore the keypress if the display number is already 12 digits
+			if (CALC_STATE.display.replace(/\./, '').length >= 12) {
+				break;
+			}
 
 	    	if (CALC_STATE.lastkey == 'key_total') {
 	    		CALC_STATE.total = 0;
