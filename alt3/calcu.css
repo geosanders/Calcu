@@ -307,3 +307,9 @@ body {
 	height: 28px;
 	background: url('images/calcu_img_comma.png') -4px 6px no-repeat transparent;
 }
+
+.small-percent {
+	font-size: 40px;
+	position: relative;
+	top: -12px;
+}
