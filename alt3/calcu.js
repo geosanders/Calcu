@@ -185,9 +185,6 @@ function processButtonPress(aButtonData) {
 				CALC_STATE.subtotal = null;
 			}
 
-			// ignore any duplicate periods
-			if (myButtonData.name === 'key_period' && CALC_STATE.display.indexOf('.') > -1) break;
-
 	    	if  (
 	    			CALC_STATE.lastkey == 'key_plus' ||
 	    			CALC_STATE.lastkey == 'key_minus' || 
@@ -206,6 +203,9 @@ function processButtonPress(aButtonData) {
 	    	if (CALC_STATE.display == '0') {
 	    		CALC_STATE.display = '';
 	    	}
+
+	    	// ignore any duplicate periods
+			if (myButtonData.name === 'key_period' && CALC_STATE.display.indexOf('.') > -1) break;
 
 	    	CALC_STATE.display += myButtonData.item;
 	    	CALC_STATE.curval = parseFloat(CALC_STATE.display);
