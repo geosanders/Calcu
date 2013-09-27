@@ -170,7 +170,7 @@ func main() {
 	http.Handle("/serial-relay", websocket.Handler(func (ws *websocket.Conn) {
 
 		// each handler gets it's own buffered channel
-		myChannel := make(chan string, 1024)
+		myChannel := make(chan string, 262144)
 		channelLock.Lock()
 
 		relayChans = append(relayChans, myChannel)
