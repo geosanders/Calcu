@@ -177,20 +177,20 @@ function keyStateUp(aKeyName) {
 		case 'key_9':
 		case 'key_period':
 
-		if (CALC_STATE.lastkey == 'key_equals') {
-			CALC_STATE.lastMultTop = null;
-		}
+    		if (CALC_STATE.lastkey == 'key_equals') {
+    			CALC_STATE.lastMultTop = null;
+    		}
 
-		if  (
-			CALC_STATE.lastkey == 'key_plus' ||
-			CALC_STATE.lastkey == 'key_minus' || 
-			CALC_STATE.lastkey == 'key_times' ||
-			CALC_STATE.lastkey == 'key_divide' ||
-			CALC_STATE.lastkey == 'key_equals' ||
-			CALC_STATE.lastkey == 'key_total'
-			) {
-			CALC_STATE.display = '0';
-	}
+    		if  (
+    			CALC_STATE.lastkey == 'key_plus' ||
+    			CALC_STATE.lastkey == 'key_minus' || 
+    			CALC_STATE.lastkey == 'key_times' ||
+    			CALC_STATE.lastkey == 'key_divide' ||
+    			CALC_STATE.lastkey == 'key_equals' ||
+    			CALC_STATE.lastkey == 'key_total'
+    			) {
+                    CALC_STATE.display = '0';
+            }
 
 	    	// ignore the keypress if the display number is already 12 digits
 	    	if (CALC_STATE.display.replace(/\./, '').length >= 12) {
@@ -218,7 +218,7 @@ function keyStateUp(aKeyName) {
 
 	    	break;
 
-	    	case 'key_backspace':
+    	case 'key_backspace':
 
 	    	if (CALC_STATE.lastkey == 'key_00' ||
 	    		CALC_STATE.lastkey == 'key_0' ||
@@ -234,44 +234,44 @@ function keyStateUp(aKeyName) {
 	    		CALC_STATE.lastkey == 'key_period') {
 
 	    		var currentDisplay = CALC_STATE.display;
-	    	if (currentDisplay != '0')
-	    		CALC_STATE.display = currentDisplay.substring(0, currentDisplay.length-1);
-	    	if (CALC_STATE.display == '') CALC_STATE.display = '0';
+                if (currentDisplay != '0') CALC_STATE.display = currentDisplay.substring(0, currentDisplay.length-1);
+                if (CALC_STATE.display == '') CALC_STATE.display = '0';
+                CALC_STATE.curval = parseFloat(CALC_STATE.display);
 
-	    	updateDisplay();
-	    }
-	    return;
-	    break;
+                updateDisplay();
+            }
+            return;
+            break;
 
 	    case 'key_plus':
 
-	    if (CALC_STATE.lastkey != 'key_total') {
+            if (CALC_STATE.lastkey != 'key_total') {
 
-	    	var currentVal = CALC_STATE.curval;
+                var currentVal = CALC_STATE.curval;
 
-	    	if (CALC_STATE.lastkey == 'key_times' || CALC_STATE.lastkey == 'key_divide') {
-	    		currentVal = CALC_STATE.subtotal;
-	    	}
+                if (CALC_STATE.lastkey == 'key_times' || CALC_STATE.lastkey == 'key_divide') {
+                	currentVal = CALC_STATE.subtotal;
+                }
 
-	    	if (CALC_STATE.lastkey == 'key_equals') {
-	    		CALC_STATE.curval = CALC_STATE.subtotal;
-	    		currentVal = CALC_STATE.subtotal;
-					// CALC_STATE.subtotal = CALC_STATE.multiplier;
-				}
-				
-				CALC_STATE.total += currentVal;
-				addTapeRow(currentVal, '+', false);
+                if (CALC_STATE.lastkey == 'key_equals') {
+                	CALC_STATE.curval = CALC_STATE.subtotal;
+                	currentVal = CALC_STATE.subtotal;
+                		// CALC_STATE.subtotal = CALC_STATE.multiplier;
+                }
+                	
+            	CALC_STATE.total += currentVal;
+            	addTapeRow(currentVal, '+', false);
 
-			} else {
-				addTapeRow(CALC_STATE.total, '+', false);
-			}
+            } else {
+            	addTapeRow(CALC_STATE.total, '+', false);
+            }
 
-			CALC_STATE.display = numberToString(CALC_STATE.total);
-			
-			CALC_STATE.lastop = '+';
-			break;
+            CALC_STATE.display = numberToString(CALC_STATE.total);
 
-			case 'key_minus':
+            CALC_STATE.lastop = '+';
+            break;
+
+		case 'key_minus':
 
 			if (CALC_STATE.lastkey != 'key_total') {
 
@@ -299,10 +299,10 @@ function keyStateUp(aKeyName) {
 			CALC_STATE.lastop = '-';
 			break;
 
-			case 'key_times':
+		case 'key_times':
 
 			if (CALC_STATE.lastkey == 'key_plus' || CALC_STATE.lastkey == 'key_minus' ||
-				CALC_STATE.lastkey == 'key_equals')
+				    CALC_STATE.lastkey == 'key_equals')
 				CALC_STATE.curval = CALC_STATE.total;
 
 			if (!CALC_STATE.lastMultTop) {
@@ -325,7 +325,7 @@ function keyStateUp(aKeyName) {
 			
 			break;
 
-			case 'key_divide':
+		case 'key_divide':
 
 			if (CALC_STATE.lastkey == 'key_plus' || CALC_STATE.lastkey == 'key_minus' ||
 				CALC_STATE.lastkey == 'key_equals')
@@ -351,7 +351,7 @@ function keyStateUp(aKeyName) {
 			
 			break;
 
-			case 'key_percent':
+		case 'key_percent':
 
 			if (CALC_STATE.lastop == '*') {
 
@@ -359,97 +359,97 @@ function keyStateUp(aKeyName) {
 
 				/*
 				if (CALC_STATE.lastkey == 'key_plus' || CALC_STATE.lastkey == 'key_minus' ||
-					CALC_STATE.lastkey == 'key_equals')
+                        CALC_STATE.lastkey == 'key_equals')
 					CALC_STATE.curval = CALC_STATE.total;
-					*/
+				*/
 
-					CALC_STATE.curval = CALC_STATE.curval / 100;
-					CALC_STATE.subtotal = executeOp(CALC_STATE.curval, CALC_STATE.lastMultTop, CALC_STATE.subtotal);
-					CALC_STATE.lastMultTop = '*';
+				CALC_STATE.curval = CALC_STATE.curval / 100;
+				CALC_STATE.subtotal = executeOp(CALC_STATE.curval, CALC_STATE.lastMultTop, CALC_STATE.subtotal);
+				CALC_STATE.lastMultTop = '*';
 
-					addTapeRow(CALC_STATE.subtotal, 'total', true);
-					CALC_STATE.display = numberToString(CALC_STATE.subtotal);
-					CALC_STATE.lastop = '*';
+				addTapeRow(CALC_STATE.subtotal, 'total', true);
+				CALC_STATE.display = numberToString(CALC_STATE.subtotal);
+				CALC_STATE.lastop = '*';
 
-				}
+			}
 
-				if (CALC_STATE.lastop == '/') {
+			if (CALC_STATE.lastop == '/') {
 
-					addTapeRow(CALC_STATE.curval, '%', true);
+				addTapeRow(CALC_STATE.curval, '%', true);
 
-				/*
-				if (CALC_STATE.lastkey == 'key_plus' || CALC_STATE.lastkey == 'key_minus' ||
-					CALC_STATE.lastkey == 'key_equals')
-					CALC_STATE.curval = CALC_STATE.total;
-					*/
+                /*
+                if (CALC_STATE.lastkey == 'key_plus' || CALC_STATE.lastkey == 'key_minus' ||
+				        CALC_STATE.lastkey == 'key_equals')
+				CALC_STATE.curval = CALC_STATE.total;
+				*/
 
-					CALC_STATE.curval = CALC_STATE.curval / 100; 
-					CALC_STATE.subtotal = executeOp(CALC_STATE.curval, CALC_STATE.lastMultTop, CALC_STATE.subtotal);
-					CALC_STATE.lastMultTop = '/';
+				CALC_STATE.curval = CALC_STATE.curval / 100; 
+				CALC_STATE.subtotal = executeOp(CALC_STATE.curval, CALC_STATE.lastMultTop, CALC_STATE.subtotal);
+				CALC_STATE.lastMultTop = '/';
 
-					addTapeRow(CALC_STATE.subtotal, 'total', true);
-					CALC_STATE.display = numberToString(CALC_STATE.subtotal);
-					CALC_STATE.lastop = '/';
+				addTapeRow(CALC_STATE.subtotal, 'total', true);
+				CALC_STATE.display = numberToString(CALC_STATE.subtotal);
+				CALC_STATE.lastop = '/';
 
-				}
+			}
 
-				break;
+			break;
 
-				case 'key_equals':
+		case 'key_equals':
 
-				if (CALC_STATE.lastMultTop) {
+			if (CALC_STATE.lastMultTop) {
 
-					if (CALC_STATE.lastkey == 'key_plus' || CALC_STATE.lastkey == 'key_minus') {
+				if (CALC_STATE.lastkey == 'key_plus' || CALC_STATE.lastkey == 'key_minus') {
 
-						if (CALC_STATE.lastMultTop == '*') {
-							CALC_STATE.subtotal = executeOp(CALC_STATE.multiplier, CALC_STATE.lastMultTop, CALC_STATE.total);
-							addTapeRow(CALC_STATE.multiplier, 'equals', true);
-						} else {
-							CALC_STATE.subtotal = executeOp(CALC_STATE.total, CALC_STATE.lastMultTop, CALC_STATE.subtotal);
-							addTapeRow(CALC_STATE.total, 'equals', true);
-
-						}
-
-					} else if (CALC_STATE.lastkey == 'key_equals') {
-
-						if (CALC_STATE.lastMultTop == '*') {
-							CALC_STATE.subtotal = executeOp(CALC_STATE.multiplier, CALC_STATE.lastMultTop, CALC_STATE.subtotal);
-							addTapeRow(CALC_STATE.multiplier, 'equals', true);
-						} else {
-							CALC_STATE.subtotal = executeOp(CALC_STATE.curval, CALC_STATE.lastMultTop, CALC_STATE.subtotal);
-							addTapeRow(CALC_STATE.curval, 'equals', true);
-						}
-
+					if (CALC_STATE.lastMultTop == '*') {
+						CALC_STATE.subtotal = executeOp(CALC_STATE.multiplier, CALC_STATE.lastMultTop, CALC_STATE.total);
+						addTapeRow(CALC_STATE.multiplier, 'equals', true);
 					} else {
+						CALC_STATE.subtotal = executeOp(CALC_STATE.total, CALC_STATE.lastMultTop, CALC_STATE.subtotal);
+						addTapeRow(CALC_STATE.total, 'equals', true);
 
-						if (CALC_STATE.lastkey != 'key_percent') {
-							if (CALC_STATE.lastop != '+' && CALC_STATE.lastop != '-') {
-								CALC_STATE.subtotal = executeOp(CALC_STATE.curval, CALC_STATE.lastMultTop, CALC_STATE.subtotal);
-							} else {
-								CALC_STATE.subtotal = executeOp(CALC_STATE.curval, CALC_STATE.lastMultTop, CALC_STATE.multiplier);
-							}
-							addTapeRow(CALC_STATE.curval, 'equals', true);
+					}
+
+				} else if (CALC_STATE.lastkey == 'key_equals') {
+
+					if (CALC_STATE.lastMultTop == '*') {
+						CALC_STATE.subtotal = executeOp(CALC_STATE.multiplier, CALC_STATE.lastMultTop, CALC_STATE.subtotal);
+						addTapeRow(CALC_STATE.multiplier, 'equals', true);
+					} else {
+						CALC_STATE.subtotal = executeOp(CALC_STATE.curval, CALC_STATE.lastMultTop, CALC_STATE.subtotal);
+						addTapeRow(CALC_STATE.curval, 'equals', true);
+					}
+
+				} else {
+
+					if (CALC_STATE.lastkey != 'key_percent') {
+						if (CALC_STATE.lastop != '+' && CALC_STATE.lastop != '-') {
+							CALC_STATE.subtotal = executeOp(CALC_STATE.curval, CALC_STATE.lastMultTop, CALC_STATE.subtotal);
+						} else {
+							CALC_STATE.subtotal = executeOp(CALC_STATE.curval, CALC_STATE.lastMultTop, CALC_STATE.multiplier);
 						}
+						addTapeRow(CALC_STATE.curval, 'equals', true);
+					}
 
-						if (CALC_STATE.lastop == '/') {
-							CALC_STATE.divider = CALC_STATE.curval;
-						}
-
+					if (CALC_STATE.lastop == '/') {
+						CALC_STATE.divider = CALC_STATE.curval;
 					}
 
 				}
 
-				CALC_STATE.display = numberToString(CALC_STATE.subtotal);
-				addTapeRow(CALC_STATE.subtotal, 'total', false);
+			}
 
-				break;
+			CALC_STATE.display = numberToString(CALC_STATE.subtotal);
+			addTapeRow(CALC_STATE.subtotal, 'total', false);
+
+			break;
 
 
-				case 'key_total':
+		case 'key_total':
 
-				CALC_STATE.display = numberToString(CALC_STATE.total);
-				CALC_STATE.curval = CALC_STATE.total;
-			// CALC_STATE.total = 0;
+			CALC_STATE.display = numberToString(CALC_STATE.total);
+			CALC_STATE.curval = CALC_STATE.total;
+            // CALC_STATE.total = 0;
 			
 			CALC_STATE.lastMultTop = null;
 			CALC_STATE.lastop = '=';
@@ -470,29 +470,26 @@ function keyStateUp(aKeyName) {
 
 			break;
 
-			case 'key_clear':
+		case 'key_clear':
 
 			CALC_STATE.display = '0';
 			CALC_STATE.curval = 0;
-			
-			if (CALC_STATE.lastkey == 'key_equals') {
-				CALC_STATE.lastMultTop = null;
-			}
 			
 			if (CALC_STATE.lastkey == 'key_clear' || 
 				CALC_STATE.lastkey == 'key_plus' ||
 				CALC_STATE.lastkey == 'key_minus' ||
 				CALC_STATE.lastkey == 'key_times' ||
 				CALC_STATE.lastkey == 'key_divide' ||
+				CALC_STATE.lastkey == 'key_equals' ||
 				CALC_STATE.lastkey == 'key_total') {
 
 				if (CALC_STATE.lastkey == 'key_clear') clearTape();
-			CALC_STATE.total = 0;
-			addTapeRow(CALC_STATE.total, 'total', false);
-			CALC_STATE.lastMultTop = null;
-			CALC_STATE.subtotal = null;
-			CALC_STATE.lastop = null;
-		}
+				CALC_STATE.total = 0;
+				addTapeRow(CALC_STATE.total, 'total', false);
+				CALC_STATE.lastMultTop = null;
+				CALC_STATE.subtotal = null;
+				CALC_STATE.lastop = null;
+			}
 		
 	}
 
@@ -1197,23 +1194,74 @@ if (autotest) {
 		console.assert(CALC_STATE.subtotal == 3.5);
 		if (CALC_STATE.subtotal != 3.5) return;
 
+		CALC_STATE.emulateKeyPressQueue = ['key_clear', 'key_clear',
+		'key_5', 'key_5', 'key_0', 'key_0', 'key_times',
+		'key_2', 'key_equals',
+		'key_plus',
+		'key_2', 'key_5', 'key_0', 'key_0',
+		'key_equals'
+		];
+		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
+		console.assert(CALC_STATE.subtotal == 13750000);
+		if (CALC_STATE.subtotal != 13750000) return;
+
+		CALC_STATE.emulateKeyPressQueue = ['key_clear', 'key_clear',
+		'key_1', 'key_2', 'key_3', 'key_4', 'key_5', 'key_6', 'key_7', 'key_8', 'key_9', 'key_0', 'key_1', 'key_2',
+		'key_plus', 'key_1', 'key_plus'
+		];
+		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
+		console.assert(CALC_STATE.total == 123456789013);
+		if (CALC_STATE.total != 123456789013) return;
+
+		CALC_STATE.emulateKeyPressQueue = ['key_clear', 'key_clear',
+		'key_2', 'key_5', 'key_times',
+		'key_4', 'key_0', 'key_0', 'key_0', 'key_equals',
+		'key_times',
+		'key_5', 'key_5', 'key_percent',
+		'key_equals'
+		];
+		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
+		console.assert(CALC_STATE.subtotal == 55000.00000000001);
+		if (CALC_STATE.subtotal != 55000.00000000001) return;
+
+		CALC_STATE.emulateKeyPressQueue = ['key_total',
+		'key_2', 'key_0', 'key_times',
+		'key_2', 'key_0', 'key_0', 'key_0', 'key_equals',
+		'key_plus',
+		'key_5', 'key_5', 'key_0', 'key_0', 'key_0', 'key_equals'
+		];
+		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
+		console.assert(CALC_STATE.subtotal == 1100000);
+		if (CALC_STATE.subtotal != 1100000) return;
+
+		CALC_STATE.emulateKeyPressQueue = ['key_clear',
+		'key_5', 'key_5', 'key_0', 'key_0', 'key_0', 'key_plus',
+		'key_4', 'key_0', 'key_0', 'key_0', 'key_0', 'key_plus',
+		'key_total'
+		];
+		while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
+		console.assert(CALC_STATE.total == 95000);
+		if (CALC_STATE.total != 95000) return;
+
+        CALC_STATE.emulateKeyPressQueue = ['key_total',
+        'key_9', 'key_5', 'key_0', 'key_0', 'key_0', 'key_times',
+        'key_7', 'key_5', 'key_percent',
+        'key_equals',
+        'key_times',
+        'key_3', 'key_0', 'key_percent',
+        'key_equals',
+        'key_divide',
+        'key_1', 'key_0', 'key_0',
+        'key_equals',
+        ];
+        while (CALC_STATE.emulateKeyPressQueue.length) emulateKeyPress(null);
+        console.assert(CALC_STATE.subtotal == 213.75);
+        if (CALC_STATE.subtotal != 213.75) return;
+
+
 
 		/**
 
-
-		5500 *
-		2 =
-
-		+
-		2500
-		=
-
-		13 750 000
-
-
-		123456789012 +
-		1 =
-		123456789013
 
 		7 / 3.5 = + =         	(0.57)
 		7 / 3.5 = + + =         (1.14)
